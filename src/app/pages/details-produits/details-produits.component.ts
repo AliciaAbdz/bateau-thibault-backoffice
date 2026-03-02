@@ -15,6 +15,7 @@ export class DetailsProduitsComponent {
   constructor(public productsService: ProductService) {}
 
   ngOnInit() {
+    console.log("skhnsjldgnsdglsdg,skmw:fs")
     this.getProducts();
   }
   getProducts() {

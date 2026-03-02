@@ -9,13 +9,18 @@ import { ProductService } from '../../services/products/products';
   styleUrl: './details-produits.component.css',
 })
 export class DetailsProduitsComponent {
+
   public detailsProduits: Product[] = [];
 
   constructor(public productsService: ProductService) {}
 
+  ngOnInit() {
+    this.getProducts();
+  }
   getProducts() {
     this.productsService.getProductsFromJson().subscribe(
       (response: Product[]) => {
+        console.log("Product list : ", response)
         return response;
       },
       (error) => {

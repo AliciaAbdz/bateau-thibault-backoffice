@@ -11,10 +11,14 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Charge env variables
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -37,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -75,11 +80,11 @@ WSGI_APPLICATION = 'backoffice.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bateau_thibault',      # Nom de votre base de données
-        'USER': 'root',                  # Utilisateur MySQL
-        'PASSWORD': 'root',    # Votre mot de passe MySQL
+        'NAME': os.getenv('DB_NAME'),      # Nom de votre base de données
+        'USER': os.getenv('DB_USER'),                  # Utilisateur MySQL
+        'PASSWORD': os.getenv('DB_PASSWORD'),    # Votre mot de passe MySQL
         'HOST': '127.0.0.1',            # Adresse du serveur MySQL
-        'PORT': '3306',                 # Port MySQL (par défaut 3306)
+        'PORT': os.getenv('DB_PORT'),                 # Port MySQL (par défaut 3306)
     }
 }
 

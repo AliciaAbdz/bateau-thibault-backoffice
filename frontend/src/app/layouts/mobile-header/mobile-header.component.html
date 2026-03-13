@@ -1,1 +1,68 @@
-<p>mobile-header works!</p>
+<header class="mobile-header">
+  <!-- Logo et nom de l'application -->
+  <div class="header-brand">
+    <div class="logo">
+      <img src="/images/logo-long.png" alt="FreshPilot Logo" class="logo-image" />
+    </div>
+  </div>
+
+  <!-- Section utilisateur -->
+  <div class="header-user" *ngIf="user">
+    <div class="user-info" (click)="toggleUserMenu()" [class.active]="isUserMenuOpen">
+      <!-- Avatar utilisateur -->
+      <div class="user-avatar">
+        <img 
+          *ngIf="user.avatarUrl; else initialsAvatar" 
+          [src]="user.avatarUrl" 
+          [alt]="user.name"
+          class="avatar-image"
+        />
+        <ng-template #initialsAvatar>
+          <div class="avatar-initials">{{ getUserInitials() }}</div>
+        </ng-template>
+      </div>
+
+      <!-- Badge rôle -->
+      <div class="user-role-badge">
+        <span class="role-icon">👤</span>
+        <span class="role-text">{{ user.role }}</span>
+      </div>
+    </div>
+
+    <!-- Dropdown menu utilisateur -->
+    <div class="user-dropdown" *ngIf="isUserMenuOpen && showUserMenu">
+      <div class="dropdown-content">
+        <div class="dropdown-header">
+          <p class="user-name">{{ user.name }}</p>
+          <p class="user-role">{{ user.role }}</p>
+        </div>
+        
+        <div class="dropdown-divider"></div>
+        
+        <button class="dropdown-item" (click)="navigateToProfile()">
+          <span class="item-icon">👤</span>
+          <span>Mon profil</span>
+        </button>
+        
+        <button class="dropdown-item" (click)="navigateToSettings()">
+          <span class="item-icon">⚙️</span>
+          <span>Paramètres</span>
+        </button>
+        
+        <div class="dropdown-divider"></div>
+        
+        <button class="dropdown-item logout-item" (click)="onLogout()">
+          <span class="item-icon">🚪</span>
+          <span>Déconnexion</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay pour fermer le menu au clic extérieur -->
+  <div 
+    class="dropdown-overlay" 
+    *ngIf="isUserMenuOpen" 
+    (click)="closeUserMenu()">
+  </div>
+</header>

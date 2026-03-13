@@ -7,4 +7,11 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
 
-];
+  {
+    path: 'home',
+    loadComponent: () =>
+      import('./layouts/app-header/app-header.component').then((m) => m.AppHeaderComponent),
+
+  },
+
+]; 

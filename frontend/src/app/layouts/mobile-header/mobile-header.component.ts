@@ -25,6 +25,7 @@ export interface UserHeaderData {
  *   (logout)="handleLogout()">
  * </mobile-header>
  */
+
 @Component({
   selector: 'mobile-header',
   standalone: true,
@@ -36,13 +37,24 @@ export class MobileHeaderComponent {
   /**
    * Données de l'utilisateur connecté à afficher dans le header
    */
-  @Input() user: UserHeaderData | null = null;
  
+  private default_user : UserHeaderData = {
+  name : "Sivan Cozzo",
+  role : "admin",
+  }
+
+  @Input() user: UserHeaderData | UserHeaderData = this.default_user;
+
   /**
    * Afficher ou masquer le menu utilisateur au clic
    */
   @Input() showUserMenu = true;
  
+  /**
+   * Afficher ou masquer le menu utilisateur au clic
+   */
+  @Input() StepName = "ADD ITEM";
+
   /**
    * Événement émis lors du clic sur le bouton de déconnexion
    */
@@ -85,13 +97,6 @@ export class MobileHeaderComponent {
     this.router.navigate(['/profile']);
   }
  
-  /**
-   * Navigation vers les paramètres
-   */
-  navigateToSettings(): void {
-    this.closeUserMenu();
-    this.router.navigate(['/settings']);
-  }
  
   /**
    * Retourne les initiales de l'utilisateur pour l'avatar par défaut

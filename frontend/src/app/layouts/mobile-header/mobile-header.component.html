@@ -1,8 +1,8 @@
 <header class="mobile-header">
   <!-- Logo et nom de l'application -->
   <div class="header-brand">
-    <div class="logo">
-      <img src="/images/logo-long.png" alt="FreshPilot Logo" class="logo-image" />
+    <div class="page-title">
+      {{StepName}}
     </div>
   </div>
 
@@ -42,11 +42,6 @@
         <button class="dropdown-item" (click)="navigateToProfile()">
           <span class="item-icon">👤</span>
           <span>Mon profil</span>
-        </button>
-        
-        <button class="dropdown-item" (click)="navigateToSettings()">
-          <span class="item-icon">⚙️</span>
-          <span>Paramètres</span>
         </button>
         
         <div class="dropdown-divider"></div>

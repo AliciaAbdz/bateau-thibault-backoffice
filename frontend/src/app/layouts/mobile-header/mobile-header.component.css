@@ -2,40 +2,326 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.15em 1em;
-  background: linear-gradient(135deg, #7BC67E 0%, #7BC67E 100%);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  position: relative;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
   z-index: 1000;
+  min-height: 60px;
 }
 
- /* Logo et brand */
-.mobile-header-brand {
+/* Logo et titre de page */
+.mobile-header .header-brand {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
 }
 
-.logo {
-  width: 12em;
-  height: auto;
+.mobile-header .page-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
 
-  .logo-image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+/* Section utilisateur */
+.mobile-header .header-user {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.mobile-header .user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.375rem;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.mobile-header .user-info:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-header .user-info.active {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Avatar utilisateur */
+.mobile-header .user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mobile-header .user-avatar .avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mobile-header .user-avatar .avatar-initials {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4CAF50;
+}
+
+/* Badge rôle (masqué par défaut sur très petit écran) */
+.mobile-header .user-role-badge {
+  display: none;
+  align-items: center;
+  gap: 0.375rem;
+  background: white;
+  padding: 0.375rem 0.75rem;
+  border-radius: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mobile-header .user-role-badge .role-icon {
+  font-size: 0.875rem;
+}
+
+.mobile-header .user-role-badge .role-text {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4CAF50;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Animation du badge au survol */
+.mobile-header .user-info:hover .user-role-badge {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Dropdown menu */
+.mobile-header .user-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 220px;
+  max-width: 280px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+  animation: slideDown 0.2s ease;
+  overflow: hidden;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.copyright {
-    color: white;
+.mobile-header .dropdown-content {
+  padding: 0.5rem;
 }
-.contributors {
-    size: 12px;
+
+.mobile-header .dropdown-header {
+  padding: 1rem;
+  background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
 }
-/* Responsive */
-@media (max-width: 768px) {
+
+.mobile-header .dropdown-header .user-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 0.25rem 0;
+  word-break: break-word;
+}
+
+.mobile-header .dropdown-header .user-role {
+  font-size: 0.8125rem;
+  color: #666;
+  margin: 0;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.mobile-header .dropdown-divider {
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 0.5rem 0;
+}
+
+.mobile-header .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  color: #333;
+  text-align: left;
+  font-family: inherit;
+}
+
+.mobile-header .dropdown-item:hover {
+  background-color: #f5f5f5;
+  transform: translateX(2px);
+}
+
+.mobile-header .dropdown-item:active {
+  transform: scale(0.98);
+}
+
+.mobile-header .dropdown-item .item-icon {
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}
+
+.mobile-header .dropdown-item.logout-item {
+  color: #f44336;
+}
+
+.mobile-header .dropdown-item.logout-item:hover {
+  background-color: #ffebee;
+}
+
+/* Overlay pour fermer le dropdown */
+.mobile-header .dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  background: transparent;
+}
+
+/* État focus pour accessibilité */
+.mobile-header .user-info:focus-visible,
+.mobile-header .dropdown-item:focus-visible {
+  outline: 2px solid #4CAF50;
+  outline-offset: 2px;
+}
+
+/* Amélioration pour iOS (éviter le tap highlight) */
+.mobile-header .user-info,
+.mobile-header .dropdown-item {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Responsive pour très petits écrans (< 360px) */
+@media (max-width: 360px) {
   .mobile-header {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .mobile-header .page-title {
+    font-size: 1rem;
+  }
+
+  .mobile-header .user-avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .mobile-header .user-dropdown {
+    min-width: 200px;
+  }
+}
+
+/* Afficher le badge sur écrans moyens et plus (>= 375px) */
+@media (min-width: 375px) {
+  .mobile-header .user-role-badge {
+    display: flex;
+  }
+}
+
+/* Responsive pour tablettes (>= 768px) */
+@media (min-width: 768px) {
+  .mobile-header {
+    padding: 1rem 1.5rem;
+  }
+
+  .mobile-header .page-title {
+    font-size: 1.25rem;
+  }
+
+  .mobile-header .user-avatar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .mobile-header .user-role-badge {
     padding: 0.5rem 1rem;
+  }
+
+  .mobile-header .user-role-badge .role-text {
+    font-size: 0.8125rem;
+  }
+
+  .mobile-header .user-dropdown {
+    min-width: 240px;
+  }
+}
+
+/* Support pour le mode sombre (optionnel) */
+@media (prefers-color-scheme: dark) {
+  .mobile-header .user-dropdown {
+    background: #2d2d2d;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .mobile-header .dropdown-header {
+    background: linear-gradient(135deg, #3a3a3a 0%, #404040 100%);
+  }
+
+  .mobile-header .dropdown-header .user-name {
+    color: #f5f5f5;
+  }
+
+  .mobile-header .dropdown-header .user-role {
+    color: #b0b0b0;
+  }
+
+  .mobile-header .dropdown-divider {
+    background-color: #444;
+  }
+
+  .mobile-header .dropdown-item {
+    color: #f5f5f5;
+  }
+
+  .mobile-header .dropdown-item:hover {
+    background-color: #3a3a3a;
+  }
+
+  .mobile-header .dropdown-item.logout-item {
+    color: #ff5252;
+  }
+
+  .mobile-header .dropdown-item.logout-item:hover {
+    background-color: #4a2020;
   }
 }

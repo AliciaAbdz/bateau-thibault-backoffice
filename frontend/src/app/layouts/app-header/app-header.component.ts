@@ -33,10 +33,14 @@ export interface UserHeaderData {
   styleUrls: ['./app-header.component.css']
 })
 export class AppHeaderComponent {
+  private default_user : UserHeaderData = {
+  name : "Sivan Cozzo",
+  role : "admin",
+  }
   /**
    * Données de l'utilisateur connecté à afficher dans le header
    */
-  @Input() user: UserHeaderData | null = null;
+  @Input() user: UserHeaderData | UserHeaderData = this.default_user;
  
   /**
    * Afficher ou masquer le menu utilisateur au clic
@@ -83,14 +87,6 @@ export class AppHeaderComponent {
   navigateToProfile(): void {
     this.closeUserMenu();
     this.router.navigate(['/profile']);
-  }
- 
-  /**
-   * Navigation vers les paramètres
-   */
-  navigateToSettings(): void {
-    this.closeUserMenu();
-    this.router.navigate(['/settings']);
   }
  
   /**

@@ -1,53 +1,66 @@
-<header class="app-header">
+<header class="flex justify-between items-center px-4 py-3 bg-gradient-to-br from-green-500 to-green-400 shadow-md sticky top-0 z-[1000] min-h-[60px]">
   <!-- Logo et nom de l'application -->
-  <div class="header-brand">
-    <div class="logo">
-      <img src="/images/logo-long.png" alt="FreshPilot Logo" class="logo-image" />
+  <div class="flex-1 flex items-center">
+    <div class="w-48">
+      <img src="/images/logo-long.png" alt="FreshPilot Logo" class="w-full h-full object-contain" />
     </div>
   </div>
 
   <!-- Section utilisateur -->
-  <div class="header-user" *ngIf="user">
-    <div class="user-info" (click)="toggleUserMenu()" [class.active]="isUserMenuOpen">
+  <div class="relative flex items-center" *ngIf="user">
+    <div 
+      class="flex items-center gap-2 cursor-pointer px-1.5 py-1.5 rounded-lg transition-colors duration-200 hover:bg-white/10"
+      [ngClass]="{'bg-white/15': isUserMenuOpen}"
+      (click)="toggleUserMenu()"
+    >
       <!-- Avatar utilisateur -->
-      <div class="user-avatar">
+      <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-md bg-white flex items-center justify-center flex-shrink-0">
         <img 
           *ngIf="user.avatarUrl; else initialsAvatar" 
           [src]="user.avatarUrl" 
           [alt]="user.name"
-          class="avatar-image"
+          class="w-full h-full object-cover"
         />
         <ng-template #initialsAvatar>
-          <div class="avatar-initials">{{ getUserInitials() }}</div>
+          <div class="text-sm font-semibold text-green-500">{{ getUserInitials() }}</div>
         </ng-template>
       </div>
 
-      <!-- Badge rôle -->
-      <div class="user-role-badge">
-        <span class="role-icon">👤</span>
-        <span class="role-text">{{ user.role }}</span>
+      <!-- Badge rôle (masqué sur très petits écrans) -->
+      <div class="hidden min-[375px]:flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-2xl shadow-md transition-all duration-200 hover:translate-y-[-1px] hover:shadow-lg">
+        <span class="text-sm">👤</span>
+        <span class="text-xs font-semibold text-green-500 uppercase whitespace-nowrap">{{ user.role }}</span>
       </div>
     </div>
 
     <!-- Dropdown menu utilisateur -->
-    <div class="user-dropdown" *ngIf="isUserMenuOpen && showUserMenu">
-      <div class="dropdown-content">
-        <div class="dropdown-header">
-          <p class="user-name">{{ user.name }}</p>
-          <p class="user-role">{{ user.role }}</p>
+    <div 
+      *ngIf="isUserMenuOpen && showUserMenu"
+      class="absolute top-[calc(100%+0.5rem)] right-0 min-w-[220px] max-w-[280px] bg-white rounded-xl shadow-2xl z-[1001] overflow-hidden animate-slideDown"
+    >
+      <div class="p-2">
+        <div class="p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg mb-2">
+          <p class="text-[15px] font-semibold text-gray-800 mb-1 break-words">{{ user.name }}</p>
+          <p class="text-[13px] text-gray-600 uppercase font-medium">{{ user.role }}</p>
         </div>
         
-        <div class="dropdown-divider"></div>
+        <div class="h-px bg-gray-200 my-2"></div>
         
-        <button class="dropdown-item" (click)="navigateToProfile()">
-          <span class="item-icon">👤</span>
+        <button 
+          class="flex items-center gap-3 w-full px-4 py-3 bg-transparent border-none rounded-lg cursor-pointer transition-all duration-200 text-sm text-gray-800 text-left hover:bg-gray-50 hover:translate-x-0.5 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-green-500 focus-visible:outline-offset-2"
+          (click)="navigateToProfile()"
+        >
+          <span class="text-lg flex-shrink-0">👤</span>
           <span>Mon profil</span>
         </button>
         
-        <div class="dropdown-divider"></div>
+        <div class="h-px bg-gray-200 my-2"></div>
         
-        <button class="dropdown-item logout-item" (click)="onLogout()">
-          <span class="item-icon">🚪</span>
+        <button 
+          class="flex items-center gap-3 w-full px-4 py-3 bg-transparent border-none rounded-lg cursor-pointer transition-all duration-200 text-sm text-red-500 text-left hover:bg-red-50 hover:translate-x-0.5 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-green-500 focus-visible:outline-offset-2"
+          (click)="onLogout()"
+        >
+          <span class="text-lg flex-shrink-0">🚪</span>
           <span>Déconnexion</span>
         </button>
       </div>
@@ -56,8 +69,8 @@
 
   <!-- Overlay pour fermer le menu au clic extérieur -->
   <div 
-    class="dropdown-overlay" 
     *ngIf="isUserMenuOpen" 
-    (click)="closeUserMenu()">
-  </div>
+    class="fixed inset-0 z-[999] bg-transparent"
+    (click)="closeUserMenu()"
+  ></div>
 </header>

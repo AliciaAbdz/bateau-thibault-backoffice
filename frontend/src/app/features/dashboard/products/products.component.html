@@ -1,8 +1,14 @@
 <!-- Filtres catégories -->
 <div class="flex items-center gap-3 mb-6">
-  <span class="px-4 py-1.5 text-sm border border-gray-300 rounded-full text-gray-600 cursor-pointer hover:bg-gray-50">Fruits de mer</span>
-  <span class="px-4 py-1.5 text-sm border border-gray-300 rounded-full text-gray-600 cursor-pointer hover:bg-gray-50">Fruits de mer</span>
-  <span class="px-4 py-1.5 text-sm bg-[#F4845F] text-white rounded-full cursor-pointer">Crustacés</span>
+  @for (cat of categories(); track cat) {
+    <span
+      (click)="selectCategory(cat)"
+      [class]="selectedCategory() === cat
+        ? 'px-4 py-1.5 text-sm bg-[#F4845F] text-white rounded-full cursor-pointer'
+        : 'px-4 py-1.5 text-sm border border-gray-300 rounded-full text-gray-600 cursor-pointer hover:bg-gray-50'">
+      {{ cat }}
+    </span>
+  }
   <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-full text-gray-500 hover:bg-gray-50 text-lg">+</button>
 </div>
 
@@ -23,18 +29,15 @@
       </tr>
     </thead>
     <tbody>
-      @for (product of products; track $index) {
+      @for (article of filteredArticles(); track article.id) {
         <tr class="border-t border-gray-100">
-          <td class="py-3 px-2 font-medium">{{ product.nom }}</td>
-          <td class="py-3 px-2 font-bold">{{ product.prix }}</td>
-          <td class="py-3 px-2">{{ product.prixPromo }}</td>
-          <td class="py-3 px-2">{{ product.pourcentagePromo }}</td>
-          <td class="py-3 px-2 text-center bg-sky-50">
-            <span class="text-[#F4845F]">{{ product.edit }}</span>
-          </td>
-          <td class="py-3 px-2">{{ product.quantiteStock }}</td>
-          <td class="py-3 px-2">{{ product.nbArticlesVendus }}</td>
-          <td class="py-3 px-2">{{ product.commentaire }}</td>
+          <td class="py-3 px-2 font-medium">{{ article.name }}</td>
+          <td class="py-3 px-2 font-bold">{{ article.price }}</td>
+          <td class="py-3 px-2">{{ article.discount_price }}</td>
+          <td class="py-3 px-2">{{ article.discount_percent }}</td>
+          <td class="py-3 px-2">{{ article.stock }}</td>
+          <td class="py-3 px-2">{{ article.sales }}</td>
+          <td class="py-3 px-2">{{ article.comment }}</td>
           <td class="py-3 px-2 text-center">
             <button class="text-red-400 hover:text-red-600">🗑️</button>
           </td>

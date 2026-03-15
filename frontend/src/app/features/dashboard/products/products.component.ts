@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
+import { RetailArticleDisplay } from '../../../models/models';
+import { ProductsService } from '../../../services/products/products.service';
 
 @Component({
   selector: 'app-products',
@@ -7,13 +9,32 @@ import { Component } from '@angular/core';
   styleUrl: './products.component.css'
 })
 export class ProductsComponent {
-  products = [
-    { nom: 'Hommard', prix: '45€', prixPromo: 'blabla', pourcentagePromo: '5', edit: '', quantiteStock: 'blabla', nbArticlesVendus: 'blabla', commentaire: 'blabla' },
-    { nom: 'Hommard', prix: '45€', prixPromo: 'blabla', pourcentagePromo: '25', edit: '31', quantiteStock: 'blabla', nbArticlesVendus: 'blabla', commentaire: 'blabla' },
-    { nom: 'Hommard', prix: '45€', prixPromo: 'blabla', pourcentagePromo: '', edit: '', quantiteStock: 'blabla', nbArticlesVendus: 'blabla', commentaire: 'blabla' },
-    { nom: 'Hommard', prix: '45€', prixPromo: 'blabla', pourcentagePromo: '', edit: '', quantiteStock: 'blabla', nbArticlesVendus: 'blabla', commentaire: 'blabla' },
-    { nom: 'Hommard', prix: '45€', prixPromo: 'blabla', pourcentagePromo: '7', edit: '', quantiteStock: 'blabla', nbArticlesVendus: 'blabla', commentaire: 'blabla' },
-    { nom: 'Hommard', prix: '45€', prixPromo: 'blabla', pourcentagePromo: '', edit: '5', quantiteStock: 'blabla', nbArticlesVendus: 'blabla', commentaire: 'blabla' },
-    { nom: 'Hommard', prix: '45€', prixPromo: 'blabla', pourcentagePromo: 'blabla', edit: '', quantiteStock: 'blabla', nbArticlesVendus: 'blabla', commentaire: 'blabla' },
-  ];
+
+  retailArticles = signal<RetailArticleDisplay[]>([]);
+
+  selectedCategory = signal<string | null>(null);
+
+  categories = computed(() => this.productService.getRetailerCategory(this.retailArticles()));
+
+  filteredArticles = computed(() => {
+    const selected = this.selectedCategory();
+    if (!selected) return this.retailArticles();
+    return this.retailArticles().filter(a => a.category === selected);
+  });
+  
+  userId = 1; // Change for userId gathered by JWT
+
+  constructor(private productService:ProductsService){}
+  ngOnInit() {
+    this.productService.getArticles(this.userId).subscribe(data => {
+      this.retailArticles.set(data);
+      const cats = this.categories();
+      if (cats.length > 0) this.selectedCategory.set(cats[0]);
+    });
+  }
+
+  selectCategory(category: string) {
+    this.selectedCategory.set(this.selectedCategory() === category ? null : category);
+  }
+
 }

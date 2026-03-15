@@ -1,1 +1,45 @@
-<p>validate-product-page works!</p>
+<div class="flex flex-col min-h-screen" style="background: linear-gradient(to bottom, rgba(197, 255, 199, 0.1) 0%, rgba(186, 255, 189, 0.1) 100%)">
+  <!-- Header -->
+  <mobile-header [StepName]="'VALIDATION'"></mobile-header>
+
+  <!-- Contenu -->
+  <div class="flex-1 flex flex-col items-center px-6 py-8">
+    <!-- Card validation -->
+    <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-6 w-full max-w-sm flex flex-col items-center">
+      <!-- Icône check -->
+      <div class="w-14 h-14 flex items-center justify-center mb-4">
+        <svg class="w-12 h-12 text-[#7BC67E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      </div>
+
+      <!-- Nom du produit -->
+      <h2 class="text-lg font-bold text-[#4B4B4B] mb-4">BAR DE LIGNE</h2>
+
+      <!-- Image produit -->
+      <div class="w-full h-40 mb-4">
+        <img src="/images/logo-long.png" alt="Bar de ligne" class="w-full h-full object-contain" />
+      </div>
+
+      <!-- Infos produit -->
+      <div class="w-full text-sm text-[#4B4B4B] space-y-1">
+        <p><span class="font-bold">CATEGORIE :</span> Poisson</p>
+        <p><span class="font-bold">ORIGINE :</span> SAINT BRIEUC</p>
+        <p><span class="font-bold">QUANTITE :</span> 100</p>
+      </div>
+    </div>
+
+    <!-- Icône box en bas -->
+    <div class="mt-10 flex items-center justify-center opacity-30">
+      <svg class="w-32 h-32 text-[#7BC67E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+      </svg>
+      <svg class="w-8 h-8 text-[#7BC67E] -ml-4 -mt-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <app-bottom-nav-mobile></app-bottom-nav-mobile>
+</div>

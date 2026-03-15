@@ -5,10 +5,11 @@ import { ProductsComponent } from '../../../features/dashboard/products/products
 import { DataComponent } from '../../../features/dashboard/data/data.component';
 import { AddProductPageComponent } from "../../products/add-product-page/add-product-page.component";
 import { AppHeaderComponent } from '../../../layouts/app-header/app-header.component';
+import { BottomNavComponent } from '../../../layouts/bottom-nav/bottom-nav.component';
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [TeamCardComponent, UserCardComponent, ProductsComponent, DataComponent, UserCardComponent,AppHeaderComponent],
+  imports: [TeamCardComponent, UserCardComponent, ProductsComponent, DataComponent, AppHeaderComponent, BottomNavComponent],
   templateUrl: './dashboard-page.component.html',
   styleUrl: './dashboard-page.component.css'
 })

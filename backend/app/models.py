@@ -24,7 +24,7 @@ class Manufacturer (models.Model) :
 class ManufacturerArticle (models.Model) :
     unit = models.CharField(max_length=5, blank=False, null=False)
     availability = models.BooleanField(default=True)
-    sales = models.BooleanField(default=False)
+    sales = models.IntegerField(default=0)
     comments = models.TextField()
     prod_id = models.ForeignKey(Product, on_delete=models.CASCADE)
     manufacturer_id = models.ForeignKey(Manufacturer, on_delete=models.CASCADE)

@@ -16,6 +16,5 @@ export class TeamCardComponent implements OnInit {
   ngOnInit() {
     const userId = 1
     this.members$ = this.clientService.getTeamMembers(userId);
-    console.log("iciciciciccici", this.members$)
   }
 }

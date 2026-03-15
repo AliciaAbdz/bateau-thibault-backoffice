@@ -23,4 +23,12 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./layouts/mobile-header/mobile-header.component').then((m) => m.MobileHeaderComponent),
   },
+
+  {
+    path: 'dashboard',
+    loadComponent: () =>
+      import('./pages/dashboard/dashboard-page/dashboard-page.component').then((m) => m.DashboardPageComponent),
+  },
+  
+  
 ]; 

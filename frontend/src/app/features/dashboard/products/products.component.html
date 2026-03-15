@@ -1,1 +1,51 @@
-<p>products works!</p>
+<!-- Filtres catégories -->
+<div class="flex items-center gap-3 mb-6">
+  <span class="px-4 py-1.5 text-sm border border-gray-300 rounded-full text-gray-600 cursor-pointer hover:bg-gray-50">Fruits de mer</span>
+  <span class="px-4 py-1.5 text-sm border border-gray-300 rounded-full text-gray-600 cursor-pointer hover:bg-gray-50">Fruits de mer</span>
+  <span class="px-4 py-1.5 text-sm bg-[#F4845F] text-white rounded-full cursor-pointer">Crustacés</span>
+  <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-full text-gray-500 hover:bg-gray-50 text-lg">+</button>
+</div>
+
+<!-- Tableau produits -->
+<div class="overflow-x-auto">
+  <table class="w-full text-sm text-left">
+    <thead>
+      <tr class="text-gray-500 font-medium">
+        <th class="py-3 px-2">Nom</th>
+        <th class="py-3 px-2">Prix</th>
+        <th class="py-3 px-2">Prix Promo</th>
+        <th class="py-3 px-2">% Promo</th>
+        <th class="py-3 px-2 text-center">✏️</th>
+        <th class="py-3 px-2">Quantité Stock ✏️</th>
+        <th class="py-3 px-2">Nb Articles Vendus</th>
+        <th class="py-3 px-2">Commentaire</th>
+        <th class="py-3 px-2"></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (product of products; track $index) {
+        <tr class="border-t border-gray-100">
+          <td class="py-3 px-2 font-medium">{{ product.nom }}</td>
+          <td class="py-3 px-2 font-bold">{{ product.prix }}</td>
+          <td class="py-3 px-2">{{ product.prixPromo }}</td>
+          <td class="py-3 px-2">{{ product.pourcentagePromo }}</td>
+          <td class="py-3 px-2 text-center bg-sky-50">
+            <span class="text-[#F4845F]">{{ product.edit }}</span>
+          </td>
+          <td class="py-3 px-2">{{ product.quantiteStock }}</td>
+          <td class="py-3 px-2">{{ product.nbArticlesVendus }}</td>
+          <td class="py-3 px-2">{{ product.commentaire }}</td>
+          <td class="py-3 px-2 text-center">
+            <button class="text-red-400 hover:text-red-600">🗑️</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<!-- Boutons -->
+<div class="flex justify-end gap-4 mt-6">
+  <button class="px-8 py-2 bg-[#F4845F] text-white rounded-full font-medium hover:opacity-90">Cancel</button>
+  <button class="px-8 py-2 bg-green-500 text-white rounded-full font-medium hover:opacity-90">Soumettre</button>
+</div>

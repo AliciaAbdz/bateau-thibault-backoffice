@@ -1,1 +1,39 @@
-<p>dashboard-page works!</p>
+<app-header></app-header>
+<div class="flex gap-6 p-6">
+  <!-- Sidebar gauche -->
+  <div class="flex flex-col gap-6 w-72 shrink-0">
+    <app-user-card></app-user-card>
+    <app-team-card></app-team-card>
+  </div>
+
+  <!-- Contenu principal -->
+  <div class="flex-1">
+    <h1 class="text-2xl font-bold text-[#4B4B4B] mb-4">Dashboard</h1>
+
+    <!-- Card principale avec onglets -->
+    <div class="bg-white rounded-2xl shadow-md p-6">
+      <!-- Onglets -->
+      <div class="flex gap-8 border-b border-gray-200 mb-6">
+        <button
+          class="pb-3 font-semibold text-sm transition-colors"
+          [class]="activeTab === 'products' ? 'border-b-2 border-[#F4845F] text-[#4B4B4B]' : 'text-gray-400'"
+          (click)="activeTab = 'products'">
+          Produits
+        </button>
+        <button
+          class="pb-3 font-semibold text-sm transition-colors"
+          [class]="activeTab === 'data' ? 'border-b-2 border-[#F4845F] text-[#4B4B4B]' : 'text-gray-400'"
+          (click)="activeTab = 'data'">
+          Données
+        </button>
+      </div>
+
+      <!-- Contenu des onglets -->
+      @if (activeTab === 'products') {
+        <app-products></app-products>
+      } @else {
+        <app-data></app-data>
+      }
+    </div>
+  </div>
+</div>

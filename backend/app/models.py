@@ -1,5 +1,10 @@
 from django.db import models
 
+class Retailer (models.Model) :
+    name = models.CharField(max_length=200, blank=False, null=False)
+    address = models.CharField(max_length=200, blank=False, null=False)
+
+    
 class Utilisateur(models.Model) : 
     created_at = models.DateField(auto_now_add = True)
     name = models.CharField(max_length=100, blank=False, null=False)
@@ -9,6 +14,7 @@ class Utilisateur(models.Model) :
     password = models.CharField(max_length=200, blank=False, default='', null=False)
     last_connection = models.DateField(auto_now_add = True)
     last_modification = models.DateField(auto_now_add = True)
+    retailer= models.ForeignKey(Retailer, on_delete=models.CASCADE)
 
 class Category (models.Model) :
     name = models.CharField(max_length=100, blank=False, null=False)
@@ -27,33 +33,29 @@ class ManufacturerArticle (models.Model) :
     sales = models.IntegerField(default=0)
     comments = models.TextField()
     prod_id = models.ForeignKey(Product, on_delete=models.CASCADE)
-    manufacturer_id = models.ForeignKey(Manufacturer, on_delete=models.CASCADE)
+    manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE)
     
-class Retailer (models.Model) :
-    name = models.CharField(max_length=200, blank=False, null=False)
-    address = models.CharField(max_length=200, blank=False, null=False)
 
-    
 class RetailerArticle (models.Model) :
     discount = models.IntegerField(default=0)
     image= models.TextField()
     unit_price = models.IntegerField(default=0)
     quantity = models.IntegerField(default=0)
     is_archived = models.BooleanField(default=False)
-    tig_id= models.ForeignKey(ManufacturerArticle, on_delete=models.CASCADE)
-    id_retail= models.ForeignKey(Retailer, on_delete=models.CASCADE)
+    tig= models.ForeignKey(ManufacturerArticle, on_delete=models.CASCADE)
+    retail= models.ForeignKey(Retailer, on_delete=models.CASCADE)
 
 
 class Purchase (models.Model) :
     date= models.DateField(auto_now_add = True)
     total= models.IntegerField(default=0)
     quantity= models.IntegerField(default=0)
-    id_retailer_article= models.ForeignKey(RetailerArticle, on_delete=models.CASCADE)
+    retailer_article= models.ForeignKey(RetailerArticle, on_delete=models.CASCADE)
 
 
 class Sale (models.Model) :
     date= models.DateField(auto_now_add = True)
     total= models.IntegerField(default=0)
     quantity= models.IntegerField(default=0)
-    id_retailer_article= models.ForeignKey(RetailerArticle, on_delete=models.CASCADE)
+    retailer_article= models.ForeignKey(RetailerArticle, on_delete=models.CASCADE)
 

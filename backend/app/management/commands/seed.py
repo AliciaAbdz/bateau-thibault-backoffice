@@ -194,8 +194,8 @@ class Command(BaseCommand):
             ('FreshPoint Nice', '10 Cours Saleya, 06300 Nice'),
         ]
         retailers = []
-        for name, address in retailers_data:
-            r = Retailer.objects.create(name=name, address=address)
+        for i, (name, address) in enumerate(retailers_data):
+            r = Retailer.objects.create(name=name, address=address, id_user=users[i % len(users)])
             retailers.append(r)
 
         self.stdout.write(f'  -> {len(retailers)} points relais créés')

@@ -1,27 +1,22 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 class Retailer (models.Model) :
     name = models.CharField(max_length=200, blank=False, null=False)
     address = models.CharField(max_length=200, blank=False, null=False)
 
-    
-class Utilisateur(models.Model) : 
-    created_at = models.DateField(auto_now_add = True)
-    name = models.CharField(max_length=100, blank=False, null=False)
-    first_name = models.CharField(max_length=100, blank=False, null=False)
+
+class Utilisateur(AbstractUser) :
     role = models.CharField(max_length=100, default='ROLE_USER', null=False)
-    email = models.CharField(unique=True, max_length=100, blank=False, null=False)
-    password = models.CharField(max_length=200, blank=False, default='', null=False)
-    last_connection = models.DateField(auto_now_add = True)
-    last_modification = models.DateField(auto_now_add = True)
-    retailer= models.ForeignKey(Retailer, on_delete=models.CASCADE)
+    last_modification = models.DateField(auto_now=True)
+    retailer = models.ForeignKey(Retailer, on_delete=models.CASCADE, related_name='utilisateur', null=True, blank=True)
 
 class Category (models.Model) :
     name = models.CharField(max_length=100, blank=False, null=False)
 
 class Product (models.Model) :
     name = models.CharField(max_length=100, blank=False, null=False)
-    category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     global_quantity = models.IntegerField(default=0)
 class Manufacturer (models.Model) :
     name = models.CharField(max_length=200, blank=False, null=False)
@@ -32,7 +27,7 @@ class ManufacturerArticle (models.Model) :
     availability = models.BooleanField(default=True)
     sales = models.IntegerField(default=0)
     comments = models.TextField()
-    prod_id = models.ForeignKey(Product, on_delete=models.CASCADE)
+    prod = models.ForeignKey(Product, on_delete=models.CASCADE)
     manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE)
     
 

@@ -16,38 +16,125 @@ class Command(BaseCommand):
         Purchase.objects.all().delete()
         RetailerArticle.objects.all().delete()
         ManufacturerArticle.objects.all().delete()
-        Retailer.objects.all().delete()
         Manufacturer.objects.all().delete()
         Product.objects.all().delete()
         Category.objects.all().delete()
         Utilisateur.objects.all().delete()
+        Retailer.objects.all().delete()
 
+        # --- RETAILERS (créés en premier car Utilisateur a une FK vers Retailer) ---
+        self.stdout.write('Création des points relais...')
+        retailers_data = [
+            ('FreshPoint Brest', '25 Rue de Siam, 29200 Brest'),
+            ('FreshPoint Lorient', '12 Cours de Chazelles, 56100 Lorient'),
+            ('FreshPoint Rennes', '8 Place de la Mairie, 35000 Rennes'),
+            ('FreshPoint Nantes', '45 Rue Crébillon, 44000 Nantes'),
+            ('FreshPoint Saint-Malo', '3 Intra-Muros, 35400 Saint-Malo'),
+            ('FreshPoint Quimper', '17 Rue Kéréon, 29000 Quimper'),
+            ('FreshPoint Vannes', '22 Place des Lices, 56000 Vannes'),
+            ('FreshPoint La Rochelle', '6 Rue du Palais, 17000 La Rochelle'),
+            ('FreshPoint Bordeaux', '50 Cours de l\'Intendance, 33000 Bordeaux'),
+            ('FreshPoint Paris 5e', '14 Rue Mouffetard, 75005 Paris'),
+            ('FreshPoint Paris 16e', '88 Avenue Victor Hugo, 75016 Paris'),
+            ('FreshPoint Lyon', '30 Rue Mercière, 69002 Lyon'),
+            ('FreshPoint Marseille', '65 La Canebière, 13001 Marseille'),
+            ('FreshPoint Toulouse', '18 Rue Alsace-Lorraine, 31000 Toulouse'),
+            ('FreshPoint Nice', '10 Cours Saleya, 06300 Nice'),
+        ]
+        retailers = []
+        for name, address in retailers_data:
+            r = Retailer.objects.create(name=name, address=address)
+            retailers.append(r)
+
+        self.stdout.write(f'  -> {len(retailers)} points relais créés')
+
+        # --- UTILISATEURS (plusieurs par retailer) ---
         self.stdout.write('Création des utilisateurs...')
         users = []
         users_data = [
-            {'name': 'ERNANDES', 'first_name': 'Flavio', 'role': 'ROLE_ADMIN', 'email': 'flavio.ernandes@freshpilot.com'},
-            {'name': 'LALAURIE', 'first_name': 'Jennifer', 'role': 'ROLE_USER', 'email': 'jennifer.lalaurie@freshpilot.com'},
-            {'name': 'FARINGA', 'first_name': 'Ahmad', 'role': 'ROLE_USER', 'email': 'ahmad.faringa@freshpilot.com'},
-            {'name': 'KHOURY', 'first_name': 'Layla', 'role': 'ROLE_USER', 'email': 'layla.khoury@freshpilot.com'},
-            {'name': 'BRIAC', 'first_name': 'Hector', 'role': 'ROLE_USER', 'email': 'hector.briac@freshpilot.com'},
-            {'name': 'COZZO', 'first_name': 'Sivan', 'role': 'ROLE_ADMIN', 'email': 'sivan.cozzo@freshpilot.com'},
-            {'name': 'ABDOULAZIZE', 'first_name': 'Alicia', 'role': 'ROLE_ADMIN', 'email': 'alicia.abdoulazize@freshpilot.com'},
-            {'name': 'DUPONT', 'first_name': 'Marie', 'role': 'ROLE_USER', 'email': 'marie.dupont@freshpilot.com'},
-            {'name': 'MARTIN', 'first_name': 'Lucas', 'role': 'ROLE_USER', 'email': 'lucas.martin@freshpilot.com'},
-            {'name': 'BERNARD', 'first_name': 'Sophie', 'role': 'ROLE_USER', 'email': 'sophie.bernard@freshpilot.com'},
-            {'name': 'PETIT', 'first_name': 'Thomas', 'role': 'ROLE_USER', 'email': 'thomas.petit@freshpilot.com'},
-            {'name': 'MOREAU', 'first_name': 'Camille', 'role': 'ROLE_USER', 'email': 'camille.moreau@freshpilot.com'},
-            {'name': 'GARCIA', 'first_name': 'Pablo', 'role': 'ROLE_USER', 'email': 'pablo.garcia@freshpilot.com'},
-            {'name': 'LEFEVRE', 'first_name': 'Julie', 'role': 'ROLE_USER', 'email': 'julie.lefevre@freshpilot.com'},
-            {'name': 'ROUX', 'first_name': 'Antoine', 'role': 'ROLE_USER', 'email': 'antoine.roux@freshpilot.com'},
+            # FreshPoint Brest (index 0) - 1 admin + 3 users
+            {'name': 'ERNANDES', 'first_name': 'Flavio', 'role': 'ROLE_ADMIN', 'email': 'flavio.ernandes@freshpilot.com', 'retailer_idx': 0},
+            {'name': 'LALAURIE', 'first_name': 'Jennifer', 'role': 'ROLE_USER', 'email': 'jennifer.lalaurie@freshpilot.com', 'retailer_idx': 0},
+            {'name': 'FARINGA', 'first_name': 'Ahmad', 'role': 'ROLE_USER', 'email': 'ahmad.faringa@freshpilot.com', 'retailer_idx': 0},
+            {'name': 'KHOURY', 'first_name': 'Layla', 'role': 'ROLE_USER', 'email': 'layla.khoury@freshpilot.com', 'retailer_idx': 0},
+            {'name': 'BRIAC', 'first_name': 'Hector', 'role': 'ROLE_USER', 'email': 'hector.briac@freshpilot.com', 'retailer_idx': 0},
+
+            # FreshPoint Lorient (index 1) - 1 admin + 2 users
+            {'name': 'COZZO', 'first_name': 'Sivan', 'role': 'ROLE_ADMIN', 'email': 'sivan.cozzo@freshpilot.com', 'retailer_idx': 1},
+            {'name': 'ABDOULAZIZE', 'first_name': 'Alicia', 'role': 'ROLE_ADMIN', 'email': 'alicia.abdoulazize@freshpilot.com', 'retailer_idx': 1},
+            {'name': 'DUPONT', 'first_name': 'Marie', 'role': 'ROLE_USER', 'email': 'marie.dupont@freshpilot.com', 'retailer_idx': 1},
+
+            # FreshPoint Rennes (index 2) - 1 admin + 2 users
+            {'name': 'MARTIN', 'first_name': 'Lucas', 'role': 'ROLE_ADMIN', 'email': 'lucas.martin@freshpilot.com', 'retailer_idx': 2},
+            {'name': 'BERNARD', 'first_name': 'Sophie', 'role': 'ROLE_USER', 'email': 'sophie.bernard@freshpilot.com', 'retailer_idx': 2},
+            {'name': 'PETIT', 'first_name': 'Thomas', 'role': 'ROLE_USER', 'email': 'thomas.petit@freshpilot.com', 'retailer_idx': 2},
+
+            # FreshPoint Nantes (index 3) - 1 admin + 1 user
+            {'name': 'MOREAU', 'first_name': 'Camille', 'role': 'ROLE_ADMIN', 'email': 'camille.moreau@freshpilot.com', 'retailer_idx': 3},
+            {'name': 'GARCIA', 'first_name': 'Pablo', 'role': 'ROLE_USER', 'email': 'pablo.garcia@freshpilot.com', 'retailer_idx': 3},
+
+            # FreshPoint Saint-Malo (index 4) - 1 admin + 1 user
+            {'name': 'LEFEVRE', 'first_name': 'Julie', 'role': 'ROLE_ADMIN', 'email': 'julie.lefevre@freshpilot.com', 'retailer_idx': 4},
+            {'name': 'ROUX', 'first_name': 'Antoine', 'role': 'ROLE_USER', 'email': 'antoine.roux@freshpilot.com', 'retailer_idx': 4},
+
+            # FreshPoint Quimper (index 5) - 1 admin + 2 users
+            {'name': 'LECLERC', 'first_name': 'Hugo', 'role': 'ROLE_ADMIN', 'email': 'hugo.leclerc@freshpilot.com', 'retailer_idx': 5},
+            {'name': 'GIRARD', 'first_name': 'Emma', 'role': 'ROLE_USER', 'email': 'emma.girard@freshpilot.com', 'retailer_idx': 5},
+            {'name': 'BONNET', 'first_name': 'Léo', 'role': 'ROLE_USER', 'email': 'leo.bonnet@freshpilot.com', 'retailer_idx': 5},
+
+            # FreshPoint Vannes (index 6) - 1 admin + 2 users
+            {'name': 'LAMBERT', 'first_name': 'Chloé', 'role': 'ROLE_ADMIN', 'email': 'chloe.lambert@freshpilot.com', 'retailer_idx': 6},
+            {'name': 'FONTAINE', 'first_name': 'Nathan', 'role': 'ROLE_USER', 'email': 'nathan.fontaine@freshpilot.com', 'retailer_idx': 6},
+            {'name': 'ROUSSEAU', 'first_name': 'Inès', 'role': 'ROLE_USER', 'email': 'ines.rousseau@freshpilot.com', 'retailer_idx': 6},
+
+            # FreshPoint La Rochelle (index 7) - 1 admin + 1 user
+            {'name': 'VINCENT', 'first_name': 'Raphaël', 'role': 'ROLE_ADMIN', 'email': 'raphael.vincent@freshpilot.com', 'retailer_idx': 7},
+            {'name': 'MULLER', 'first_name': 'Léa', 'role': 'ROLE_USER', 'email': 'lea.muller@freshpilot.com', 'retailer_idx': 7},
+
+            # FreshPoint Bordeaux (index 8) - 1 admin + 3 users
+            {'name': 'FOURNIER', 'first_name': 'Gabriel', 'role': 'ROLE_ADMIN', 'email': 'gabriel.fournier@freshpilot.com', 'retailer_idx': 8},
+            {'name': 'MERCIER', 'first_name': 'Manon', 'role': 'ROLE_USER', 'email': 'manon.mercier@freshpilot.com', 'retailer_idx': 8},
+            {'name': 'BLANC', 'first_name': 'Louis', 'role': 'ROLE_USER', 'email': 'louis.blanc@freshpilot.com', 'retailer_idx': 8},
+            {'name': 'GUERIN', 'first_name': 'Jade', 'role': 'ROLE_USER', 'email': 'jade.guerin@freshpilot.com', 'retailer_idx': 8},
+
+            # FreshPoint Paris 5e (index 9) - 1 admin + 2 users
+            {'name': 'HENRY', 'first_name': 'Adam', 'role': 'ROLE_ADMIN', 'email': 'adam.henry@freshpilot.com', 'retailer_idx': 9},
+            {'name': 'MASSON', 'first_name': 'Lina', 'role': 'ROLE_USER', 'email': 'lina.masson@freshpilot.com', 'retailer_idx': 9},
+            {'name': 'ROBIN', 'first_name': 'Ethan', 'role': 'ROLE_USER', 'email': 'ethan.robin@freshpilot.com', 'retailer_idx': 9},
+
+            # FreshPoint Paris 16e (index 10) - 1 admin + 1 user
+            {'name': 'LEMOINE', 'first_name': 'Alice', 'role': 'ROLE_ADMIN', 'email': 'alice.lemoine@freshpilot.com', 'retailer_idx': 10},
+            {'name': 'CHEVALIER', 'first_name': 'Arthur', 'role': 'ROLE_USER', 'email': 'arthur.chevalier@freshpilot.com', 'retailer_idx': 10},
+
+            # FreshPoint Lyon (index 11) - 1 admin + 2 users
+            {'name': 'FAURE', 'first_name': 'Rose', 'role': 'ROLE_ADMIN', 'email': 'rose.faure@freshpilot.com', 'retailer_idx': 11},
+            {'name': 'GAUTHIER', 'first_name': 'Sacha', 'role': 'ROLE_USER', 'email': 'sacha.gauthier@freshpilot.com', 'retailer_idx': 11},
+            {'name': 'PERRIN', 'first_name': 'Ambre', 'role': 'ROLE_USER', 'email': 'ambre.perrin@freshpilot.com', 'retailer_idx': 11},
+
+            # FreshPoint Marseille (index 12) - 1 admin + 2 users
+            {'name': 'MOREL', 'first_name': 'Théo', 'role': 'ROLE_ADMIN', 'email': 'theo.morel@freshpilot.com', 'retailer_idx': 12},
+            {'name': 'SIMON', 'first_name': 'Eva', 'role': 'ROLE_USER', 'email': 'eva.simon@freshpilot.com', 'retailer_idx': 12},
+            {'name': 'LAURENT', 'first_name': 'Noé', 'role': 'ROLE_USER', 'email': 'noe.laurent@freshpilot.com', 'retailer_idx': 12},
+
+            # FreshPoint Toulouse (index 13) - 1 admin + 1 user
+            {'name': 'MICHEL', 'first_name': 'Mila', 'role': 'ROLE_ADMIN', 'email': 'mila.michel@freshpilot.com', 'retailer_idx': 13},
+            {'name': 'DAVID', 'first_name': 'Jules', 'role': 'ROLE_USER', 'email': 'jules.david@freshpilot.com', 'retailer_idx': 13},
+
+            # FreshPoint Nice (index 14) - 1 admin + 2 users
+            {'name': 'BERTRAND', 'first_name': 'Lola', 'role': 'ROLE_ADMIN', 'email': 'lola.bertrand@freshpilot.com', 'retailer_idx': 14},
+            {'name': 'RIVIERE', 'first_name': 'Tom', 'role': 'ROLE_USER', 'email': 'tom.riviere@freshpilot.com', 'retailer_idx': 14},
+            {'name': 'ARNAUD', 'first_name': 'Clara', 'role': 'ROLE_USER', 'email': 'clara.arnaud@freshpilot.com', 'retailer_idx': 14},
         ]
         for u in users_data:
-            user = Utilisateur.objects.create(
-                name=u['name'],
+            username = f"{u['first_name'].lower()}.{u['name'].lower()}"
+            user = Utilisateur.objects.create_user(
+                username=username,
+                last_name=u['name'],
                 first_name=u['first_name'],
                 role=u['role'],
                 email=u['email'],
-                password='pbkdf2_sha256$600000$freshpilot$hashed_password_placeholder',
+                password='freshpilot2026',
+                retailer=retailers[u['retailer_idx']],
             )
             users.append(user)
 
@@ -114,7 +201,7 @@ class Command(BaseCommand):
         for name, cat_idx, qty in products_data:
             prod = Product.objects.create(
                 name=name,
-                category_id=categories[cat_idx],
+                category=categories[cat_idx],
                 global_quantity=qty,
             )
             products.append(prod)
@@ -167,38 +254,12 @@ class Command(BaseCommand):
                     availability=random.choice([True, True, True, False]),
                     sales=random.randint(0, 500),
                     comments=random.choice(comments_list),
-                    prod_id=prod,
-                    manufacturer_id=random.choice(manufacturers),
+                    prod=prod,
+                    manufacturer=random.choice(manufacturers),
                 )
                 manufacturer_articles.append(ma)
 
         self.stdout.write(f'  -> {len(manufacturer_articles)} articles fournisseurs créés')
-
-        # --- RETAILERS ---
-        self.stdout.write('Création des points relais...')
-        retailers_data = [
-            ('FreshPoint Brest', '25 Rue de Siam, 29200 Brest'),
-            ('FreshPoint Lorient', '12 Cours de Chazelles, 56100 Lorient'),
-            ('FreshPoint Rennes', '8 Place de la Mairie, 35000 Rennes'),
-            ('FreshPoint Nantes', '45 Rue Crébillon, 44000 Nantes'),
-            ('FreshPoint Saint-Malo', '3 Intra-Muros, 35400 Saint-Malo'),
-            ('FreshPoint Quimper', '17 Rue Kéréon, 29000 Quimper'),
-            ('FreshPoint Vannes', '22 Place des Lices, 56000 Vannes'),
-            ('FreshPoint La Rochelle', '6 Rue du Palais, 17000 La Rochelle'),
-            ('FreshPoint Bordeaux', '50 Cours de l\'Intendance, 33000 Bordeaux'),
-            ('FreshPoint Paris 5e', '14 Rue Mouffetard, 75005 Paris'),
-            ('FreshPoint Paris 16e', '88 Avenue Victor Hugo, 75016 Paris'),
-            ('FreshPoint Lyon', '30 Rue Mercière, 69002 Lyon'),
-            ('FreshPoint Marseille', '65 La Canebière, 13001 Marseille'),
-            ('FreshPoint Toulouse', '18 Rue Alsace-Lorraine, 31000 Toulouse'),
-            ('FreshPoint Nice', '10 Cours Saleya, 06300 Nice'),
-        ]
-        retailers = []
-        for i, (name, address) in enumerate(retailers_data):
-            r = Retailer.objects.create(name=name, address=address, id_user=users[i % len(users)])
-            retailers.append(r)
-
-        self.stdout.write(f'  -> {len(retailers)} points relais créés')
 
         # --- RETAILER ARTICLES ---
         self.stdout.write('Création des articles en point relais...')
@@ -213,8 +274,8 @@ class Command(BaseCommand):
                     unit_price=random.randint(3, 85),
                     quantity=random.randint(0, 200),
                     is_archived=random.choice([False, False, False, False, True]),
-                    tig_id=ma,
-                    id_retail=retailer,
+                    tig=ma,
+                    retail=retailer,
                 )
                 retailer_articles.append(ra)
 
@@ -229,7 +290,7 @@ class Command(BaseCommand):
             p = Purchase.objects.create(
                 total=ra.unit_price * qty,
                 quantity=qty,
-                id_retailer_article=ra,
+                retailer_article=ra,
             )
             purchases.append(p)
 
@@ -247,7 +308,7 @@ class Command(BaseCommand):
             s = Sale.objects.create(
                 total=price * qty,
                 quantity=qty,
-                id_retailer_article=ra,
+                retailer_article=ra,
             )
             sales.append(s)
 

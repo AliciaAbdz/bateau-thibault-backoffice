@@ -42,8 +42,8 @@ export class ClientService {
     return users;
   }
 
-  getAllRetailArticles(userId:number) {
-    return this.http.get<RetailArticle[]>(`${this.apiUrl}/articles/${userId}`,{ withCredentials: true }).pipe(
+  getAllRetailArticles(retailerId:number) {
+    return this.http.get<RetailArticle[]>(`${this.apiUrl}/articles/${retailerId}`,{ withCredentials: true }).pipe(
       map(articles => articles.length > 0 ? articles : this.templatearticles),
       catchError(error => {
         console.error('Error fetching articles:', error);

@@ -1,10 +1,12 @@
 import { Component, computed, signal } from '@angular/core';
 import { RetailArticleDisplay } from '../../../models/models';
 import { ProductsService } from '../../../services/products/products.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-products',
-  imports: [],
+  host: { class: 'flex flex-col flex-1' },
+  imports: [FormsModule],
   templateUrl: './products.component.html',
   styleUrl: './products.component.css'
 })
@@ -37,4 +39,25 @@ export class ProductsComponent {
     this.selectedCategory.set(this.selectedCategory() === category ? null : category);
   }
 
+
+  // Colonnes éditables ouvertes (plusieurs possibles)
+  openColumns: Set<string> = new Set();
+
+  // Nouvelles valeurs saisies par l'utilisateur
+  newValues: Record<string, string[]> = {};
+
+  toggleEditColumn(column: string): void {
+    if (this.openColumns.has(column)) {
+      // save data before delete
+      this.openColumns.delete(column);
+      delete this.newValues[column];
+    } else {
+      this.openColumns.add(column);
+      this.newValues[column] = this.retailArticles().map(() => '');
+    }
+  }
+
+  isOpen(column: string): boolean {
+    return this.openColumns.has(column);
+  }
 }

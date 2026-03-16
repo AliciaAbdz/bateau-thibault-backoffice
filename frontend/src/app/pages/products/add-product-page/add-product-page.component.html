@@ -1,1 +1,59 @@
-<p>add-product-page works!</p>
+<div class="flex flex-col min-h-screen" style="background: linear-gradient(to bottom, rgba(197, 255, 199, 0.1) 0%, rgba(186, 255, 189, 0.1) 100%)">
+  <!-- Header -->
+  <mobile-header [StepName]="'ADD ITEM'"></mobile-header>
+
+  <!-- Contenu -->
+  <div class="flex-1 flex flex-col items-center px-6 py-8">
+    <!-- Card produit -->
+    <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-6 w-full max-w-sm flex flex-col items-center">
+      <!-- Icône box -->
+      <div class="w-16 h-16 flex items-center justify-center mb-4">
+        <svg class="w-12 h-12 text-[#7BC67E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+        </svg>
+        <svg class="w-5 h-5 text-[#7BC67E] -ml-2 -mt-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+      </div>
+
+      <!-- Nom du produit -->
+      <h2 class="text-lg font-bold text-[#4B4B4B] mb-4">BAR DE LIGNE</h2>
+
+      <!-- Image produit -->
+      <div class="w-full h-40 mb-4">
+        <img src="" alt="Bar de ligne" class="w-full h-full object-contain" />
+      </div>
+
+      <!-- Infos produit -->
+      <div class="w-full text-sm text-[#4B4B4B] space-y-1 mb-4">
+        <p><span class="font-bold">CATEGORIE :</span> Poisson</p>
+        <p><span class="font-bold">ORIGINE :</span> SAINT BRIEUC</p>
+        <p><span class="font-bold">QUANTITE :</span> 100</p>
+        <p><span class="font-bold">PRIX KILO :</span> 8.00</p>
+      </div>
+
+      <!-- Séparateur -->
+      <hr class="w-full border-gray-200 my-3">
+
+      <!-- Promotion -->
+      <div class="w-full text-sm text-[#4B4B4B] space-y-2">
+        <div class="flex items-center gap-2">
+          <span class="font-bold">EN PROMOTION :</span>
+          <input type="checkbox" checked class="w-5 h-5 accent-[#7BC67E]" />
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="font-bold">% PROMOTION :</span>
+          <input type="text" class="bg-gray-200 rounded-lg px-3 py-2 text-sm w-28 outline-none focus:ring-2 focus:ring-[#7BC67E]" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Bouton Validate -->
+    <button class="mt-8 w-full max-w-sm py-4 bg-[#7BC67E] text-white text-lg font-bold uppercase rounded-full shadow-md hover:opacity-90">
+      VALIDATE
+    </button>
+  </div>
+
+  <!-- Footer -->
+  <app-bottom-nav-mobile></app-bottom-nav-mobile>
+</div>

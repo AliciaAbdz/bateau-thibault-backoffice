@@ -29,6 +29,24 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/dashboard/dashboard-page/dashboard-page.component').then((m) => m.DashboardPageComponent),
   },
-  
-  
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./pages/auth/login/login-page/login-page.component').then((m) => m.LoginPageComponent),
+  },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./pages/auth/register/register-page/register-page.component').then((m) => m.RegisterPageComponent),
+  },
+  {
+    path: 'add-product',
+    loadComponent: () =>
+      import('./pages/products/add-product-page/add-product-page.component').then((m) => m.AddProductPageComponent),
+  },
+  {
+    path: 'validate-product',
+    loadComponent: () =>
+      import('./pages/products/validate-product-page/validate-product-page.component').then((m) => m.ValidateProductPageComponent),
+  },
 ]; 

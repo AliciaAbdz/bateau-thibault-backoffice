@@ -1,8 +1,15 @@
 <!-- Filtres catégories -->
 <div class="flex items-center gap-3 mb-6">
-  <span class="px-4 py-1.5 text-sm border border-gray-300 rounded-full text-gray-600 cursor-pointer hover:bg-gray-50">Fruits de mer</span>
-  <span class="px-4 py-1.5 text-sm border border-gray-300 rounded-full text-gray-600 cursor-pointer hover:bg-gray-50">Fruits de mer</span>
-  <span class="px-4 py-1.5 text-sm bg-[#F4845F] text-white rounded-full cursor-pointer">Crustacés</span>
+  @for (cat of categories(); track cat) {
+    <span
+      (click)="selectCategory(cat)"
+      [class]="selectedCategory() === cat
+        ? 'px-4 py-1.5 text-sm bg-[#F4845F] text-white rounded-full cursor-pointer shadow-md'
+        : 'px-4 py-1.5 text-sm border border-gray-300 rounded-full text-gray-600 cursor-pointer hover:bg-gray-50'">
+      {{ cat }}
+    </span>
+  }
+
   <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-full text-gray-500 hover:bg-gray-50 text-lg">+</button>
 </div>
 
@@ -11,31 +18,100 @@
   <table class="w-full text-sm text-left">
     <thead>
       <tr class="text-gray-500 font-medium">
-        <th class="py-3 px-2">Nom</th>
-        <th class="py-3 px-2">Prix</th>
-        <th class="py-3 px-2">Prix Promo</th>
-        <th class="py-3 px-2">% Promo</th>
-        <th class="py-3 px-2 text-center">✏️</th>
-        <th class="py-3 px-2">Quantité Stock ✏️</th>
-        <th class="py-3 px-2">Nb Articles Vendus</th>
-        <th class="py-3 px-2">Commentaire</th>
-        <th class="py-3 px-2"></th>
+        <th class="py-4 px-4">Nom</th>
+
+        <!-- Prix -->
+        <th class="py-4 px-4">
+          <div class="flex items-center gap-1">
+            Prix
+            <button (click)="toggleEditColumn('price')" class="opacity-30 hover:opacity-100 transition-opacity text-xs cursor-pointer">✏️</button>
+          </div>
+        </th>
+        @if (isOpen('price')) {
+          <th class="py-4 px-3 bg-sky-50 text-[#7BC67E] text-xs">Nouveau Prix</th>
+        }
+
+        <!-- Prix Promo -->
+        <th class="py-4 px-4">
+          <div class="flex items-center gap-1">
+            Prix Promo
+            <button (click)="toggleEditColumn('discount_price')" class="opacity-30 hover:opacity-100 transition-opacity text-xs cursor-pointer">✏️</button>
+          </div>
+        </th>
+        @if (isOpen('discount_price')) {
+          <th class="py-4 px-3 bg-sky-50 text-[#7BC67E] text-xs">Nouveau Prix Promo</th>
+        }
+
+        <!-- % Promo -->
+        <th class="py-4 px-4">
+          <div class="flex items-center gap-1">
+            % Promo
+            <button (click)="toggleEditColumn('discount_percent')" class="opacity-30 hover:opacity-100 transition-opacity text-xs cursor-pointer">✏️</button>
+          </div>
+        </th>
+        @if (isOpen('discount_percent')) {
+          <th class="py-4 px-3 bg-sky-50 text-[#7BC67E] text-xs">Nouveau % Promo</th>
+        }
+
+        <!-- Quantité Stock -->
+        <th class="py-4 px-4">
+          <div class="flex items-center gap-1">
+            Quantité Stock
+            <button (click)="toggleEditColumn('stock')" class="opacity-30 hover:opacity-100 transition-opacity text-xs cursor-pointer">✏️</button>
+          </div>
+        </th>
+        @if (isOpen('stock')) {
+          <th class="py-4 px-3 bg-sky-50 text-[#7BC67E] text-xs">Nouveau Stock</th>
+        }
+
+        <th class="py-4 px-4">Nb Articles Vendus</th>
+        <th class="py-4 px-4">Commentaire</th>
+        <th class="py-4 px-4"></th>
       </tr>
     </thead>
     <tbody>
-      @for (product of products; track $index) {
+      @for (article of filteredArticles(); track article.id; let i = $index ) {
         <tr class="border-t border-gray-100">
-          <td class="py-3 px-2 font-medium">{{ product.nom }}</td>
-          <td class="py-3 px-2 font-bold">{{ product.prix }}</td>
-          <td class="py-3 px-2">{{ product.prixPromo }}</td>
-          <td class="py-3 px-2">{{ product.pourcentagePromo }}</td>
-          <td class="py-3 px-2 text-center bg-sky-50">
-            <span class="text-[#F4845F]">{{ product.edit }}</span>
+          <td class="py-4 px-4 font-medium">{{ article.name }}</td>
+
+          <!-- Prix actuel -->
+          <td class="py-4 px-4 font-bold">{{ article.price }}</td>
+          @if (isOpen('price')) {
+            <td class="py-4 px-3 bg-sky-50">
+              <input type="text" [(ngModel)]="newValues['price'][i]" placeholder="—" class="w-20 bg-white border border-gray-200 rounded px-2 py-1 text-sm outline-none focus:border-[#7BC67E] focus:ring-1 focus:ring-[#7BC67E]" />
+            </td>
+          }
+          
+
+          <!-- Prix Promo actuel -->
+          <td class="py-4 px-4">{{ article.discount_price }}</td>
+          @if (isOpen('discount_price')) {
+            <td class="py-4 px-3 bg-sky-50">
+              <input type="text" [(ngModel)]="newValues['discount_price'][i]" placeholder="—" class="w-20 bg-white border border-gray-200 rounded px-2 py-1 text-sm outline-none focus:border-[#7BC67E] focus:ring-1 focus:ring-[#7BC67E]" />
+            </td>
+          }
+
+          <!-- % Promo actuel -->
+          <td class="py-4 px-4">
+            <span class="text-[#F4845F]">{{ article.discount_percent }}</span>
           </td>
-          <td class="py-3 px-2">{{ product.quantiteStock }}</td>
-          <td class="py-3 px-2">{{ product.nbArticlesVendus }}</td>
-          <td class="py-3 px-2">{{ product.commentaire }}</td>
-          <td class="py-3 px-2 text-center">
+          @if (isOpen('discount_percent')) {
+            <td class="py-4 px-3 bg-sky-50">
+              <input type="text" [(ngModel)]="newValues['discount_percent'][i]" placeholder="—" class="w-20 bg-white border border-gray-200 rounded px-2 py-1 text-sm outline-none focus:border-[#7BC67E] focus:ring-1 focus:ring-[#7BC67E]" />
+            </td>
+          }
+
+          <!-- Quantité Stock actuel -->
+          <td class="py-4 px-4">{{ article.stock }}</td>
+          @if (isOpen('stock')) {
+            <td class="py-4 px-3 bg-sky-50">
+              <input type="text" [(ngModel)]="newValues['stock'][i]" placeholder="—" class="w-20 bg-white border border-gray-200 rounded px-2 py-1 text-sm outline-none focus:border-[#7BC67E] focus:ring-1 focus:ring-[#7BC67E]" />
+            </td>
+          }
+
+          <td class="py-4 px-4">{{ article.sales }}</td>
+          <td class="py-4 px-4">{{ article.comment }}</td>
+          <td class="py-4 px-4 text-center">
             <button class="text-red-400 hover:text-red-600">🗑️</button>
           </td>
         </tr>
@@ -45,7 +121,7 @@
 </div>
 
 <!-- Boutons -->
-<div class="flex justify-end gap-4 mt-6">
-  <button class="px-8 py-2 bg-[#F4845F] text-white rounded-full font-medium hover:opacity-90">Cancel</button>
-  <button class="px-8 py-2 bg-green-500 text-white rounded-full font-medium hover:opacity-90">Soumettre</button>
+<div class="flex justify-end gap-4 mt-auto pt-6">
+  <button class="px-8 py-2 bg-[#F4845F] text-white rounded-full font-medium hover:opacity-90 shadow-md">Cancel</button>
+  <button class="px-8 py-2 bg-[#7BC67E] text-white rounded-full font-medium hover:opacity-90 shadow-md">Soumettre</button>
 </div>

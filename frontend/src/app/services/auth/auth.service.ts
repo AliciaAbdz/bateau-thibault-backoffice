@@ -17,7 +17,7 @@ export class AuthService {
   constructor(private http:HttpClient) { }
 
   login(username : string, password : string ) {
-      return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { username, password }).pipe(
+      return this.http.post<AuthResponse>(`${this.apiUrl}/login/`, { username, password }).pipe(
       tap(response => {
         // Sauvegarder les tokens
         localStorage.setItem('access_token', response.access);

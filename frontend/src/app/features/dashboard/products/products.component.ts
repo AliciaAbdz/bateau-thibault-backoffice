@@ -2,6 +2,7 @@ import { Component, computed, signal } from '@angular/core';
 import { RetailArticleDisplay, StockChange } from '../../../models/models';
 import { ProductsService } from '../../../services/products/products.service';
 import { ClientService } from '../../../services/client/client.service';
+import { AuthService } from '../../../services/auth/auth.service';
 import { FormsModule } from '@angular/forms';
 
 interface ArticleModification {
@@ -34,7 +35,7 @@ export class ProductsComponent {
     return this.retailArticles().filter(a => a.category === selected);
   });
 
-  userId = 1; // TODO: récupérer du JWT
+  retailerId: number | null = null;
 
   // Modifications saisies par l'utilisateur (clé = article id)
   modifications: Record<number, ArticleModification> = {};
@@ -52,15 +53,19 @@ export class ProductsComponent {
 
   constructor(
     private productService: ProductsService,
-    private clientService: ClientService
+    private clientService: ClientService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
+    // Récupérer le retailer_id du JWT, sinon fallback sur 16 (premier retailer seedé)
+    this.retailerId = this.authService.getRetailerId() ?? 16;
     this.loadArticles();
   }
 
   loadArticles() {
-    this.productService.getArticles(this.userId).subscribe(data => {
+    if (!this.retailerId) return;
+    this.productService.getArticles(this.retailerId).subscribe(data => {
       this.retailArticles.set(data);
       const cats = this.categories();
       if (cats.length > 0 && !this.selectedCategory()) {

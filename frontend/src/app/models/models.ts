@@ -45,3 +45,16 @@ export interface Sale {
     total: number;
     quantity : number;
 }
+
+export interface StockChange {
+    id: number;
+    quantity_change: number;
+    is_expired: boolean;
+    purchase_price?: number;
+}
+
+export interface SubmitChangesResponse {
+    message: string;
+    purchases: { id: number; article_id: number; quantity: number; total: number }[];
+    sales: { id: number; article_id: number; quantity: number; total: number; type: string }[];
+}

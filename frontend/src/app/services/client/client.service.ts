@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { RetailArticle, User } from '../../models/models';
+import { RetailArticle, StockChange, SubmitChangesResponse, User } from '../../models/models';
 import { catchError, map, of } from 'rxjs';
 
 @Injectable({
@@ -8,7 +8,7 @@ import { catchError, map, of } from 'rxjs';
 })
 export class ClientService {
 
-  private apiUrl = 'http://localhost:8000/api/client';
+  private apiUrl = 'http://localhost:8000/api';
 
   private templateUsers: User[] = [
     { id: 1, name: "Alec", firstname: "Baldwin", email: "alec.baldwin@star.com" },
@@ -32,18 +32,17 @@ export class ClientService {
   constructor(private http:HttpClient) { }
 
   getAllUsers() {
-    let users = this.http.get<User[]>(`${this.apiUrl}/users`,{ withCredentials: true }).pipe(
-      map(users => users.length > 0 ? users : this.templateUsers), // if no users, return templateUsers
-      catchError(error => { // if error fetching, return templateUsers
-        console.error('Error fetching users:', error); 
+    return this.http.get<User[]>(`${this.apiUrl}/utilisateurs/`).pipe(
+      map(users => users.length > 0 ? users : this.templateUsers),
+      catchError(error => {
+        console.error('Error fetching users:', error);
         return of(this.templateUsers);
       })
     );
-    return users;
   }
 
   getAllRetailArticles(retailerId:number) {
-    return this.http.get<RetailArticle[]>(`${this.apiUrl}/articles/${retailerId}`,{ withCredentials: true }).pipe(
+    return this.http.get<RetailArticle[]>(`${this.apiUrl}/retailer-articles/?retail=${retailerId}`).pipe(
       map(articles => articles.length > 0 ? articles : this.templatearticles),
       catchError(error => {
         console.error('Error fetching articles:', error);
@@ -53,31 +52,49 @@ export class ClientService {
   }
 
   getTeamMembers(userId:number) {
-    return this.http.get<User[]>(`${this.apiUrl}/users/${userId}/team`,{ withCredentials: true }).pipe(
+    return this.http.get<User[]>(`${this.apiUrl}/utilisateurs/`).pipe(
       map(members => members.length > 0 ? members : this.templateTeam),
       catchError(error => {
         console.error('Error fetching team members:', error);
         return of(this.templateTeam);
-    })
-    );
-  }
-
-  updateRetailArticles(userId:number, articles:RetailArticle[]) {
-    return this.http.put<RetailArticle[]>(`${this.apiUrl}/articles/${userId}`,articles,{ withCredentials: true }).pipe(
-      map(articles => articles.length > 0 ? articles : this.templatearticles),
-      catchError(error => {
-        console.error('Error updating articles:', error);
-        return of(this.templatearticles);
       })
     );
   }
 
-  deleteRetailArticles(userId:number, articles:RetailArticle[]) {
-    return this.http.put<RetailArticle[]>(`${this.apiUrl}/articles/archive/${userId}`,articles,{ withCredentials: true }).pipe(
-      map(articles => articles.length > 0 ? articles : this.templatearticles),
+  updateRetailArticle(articleId:number, data: Partial<RetailArticle>) {
+    return this.http.patch<RetailArticle>(`${this.apiUrl}/retailer-articles/${articleId}/`, data).pipe(
       catchError(error => {
-        console.error('Error archiving articles:', error);
-        return of(this.templatearticles);
+        console.error('Error updating article:', error);
+        return of(null);
+      })
+    );
+  }
+
+  createPurchase(data: {total: number, quantity: number, retailer_article: number}) {
+    return this.http.post(`${this.apiUrl}/purchases/`, data).pipe(
+      catchError(error => {
+        console.error('Error creating purchase:', error);
+        return of(null);
+      })
+    );
+  }
+
+  createSale(data: {total: number, quantity: number, retailer_article: number}) {
+    return this.http.post(`${this.apiUrl}/sales/`, data).pipe(
+      catchError(error => {
+        console.error('Error creating sale:', error);
+        return of(null);
+      })
+    );
+  }
+
+  submitChanges(changes: StockChange[]) {
+    return this.http.post<SubmitChangesResponse>(
+      `${this.apiUrl}/retailer-articles/submit-changes/`, changes
+    ).pipe(
+      catchError(error => {
+        console.error('Error submitting changes:', error);
+        return of(null);
       })
     );
   }

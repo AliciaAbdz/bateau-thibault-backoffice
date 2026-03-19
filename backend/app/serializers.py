@@ -16,7 +16,18 @@ class CategorySerializer(serializers.ModelSerializer):
 class UtilisateurSerializer(serializers.ModelSerializer):
     class Meta:
         model = Utilisateur
-        fields = '__all__'
+        exclude = ['password']
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True, min_length=8)
+
+    class Meta:
+        model = Utilisateur
+        fields = ['username', 'email', 'password', 'first_name', 'last_name', 'role', 'retailer']
+
+    def create(self, validated_data):
+        return Utilisateur.objects.create_user(**validated_data)
 
 
 class RetailerSerializer(serializers.ModelSerializer):
@@ -60,6 +71,34 @@ class RetailerArticleSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class RetailerArticleFlatSerializer(serializers.ModelSerializer):
+    """Serializer aplati pour le frontend - correspond à l'interface RetailArticle"""
+    name = serializers.SerializerMethodField()
+    category = serializers.SerializerMethodField()
+    price = serializers.IntegerField(source='unit_price')
+    discount_percent = serializers.IntegerField(source='discount')
+    stock = serializers.IntegerField(source='quantity')
+    sales = serializers.SerializerMethodField()
+    comment = serializers.SerializerMethodField()
+
+    class Meta:
+        model = RetailerArticle
+        fields = ['id', 'name', 'category', 'price', 'discount_percent',
+                  'stock', 'sales', 'comment']
+
+    def get_name(self, obj):
+        return obj.tig.prod.name
+
+    def get_category(self, obj):
+        return obj.tig.prod.category.name
+
+    def get_sales(self, obj):
+        return obj.tig.sales
+
+    def get_comment(self, obj):
+        return obj.tig.comments
+
+
 class PurchaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Purchase
@@ -81,7 +120,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         # Ajouter des claims personnalisés
         token['retailer'] =  user.retailer_id 
         token['role'] = user.role
-        token['last_connexion'] = user.last_connexion
+        token['last_connexion'] = str(user.last_login) if user.last_login else None
 
 
 

@@ -80,6 +80,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         # Ajouter des claims personnalisés
         token['retailer'] =  user.retailer_id 
+        token['role'] = user.role
+        token['last_connexion'] = user.last_connexion
 
 
 

@@ -1,0 +1,66 @@
+<div class="min-h-screen bg-gray-50 p-6">
+  <div class="max-w-5xl mx-auto">
+    <a routerLink="/pim" class="text-sm text-blue-600 hover:underline">← Retour au catalogue</a>
+
+    <header class="mt-4 mb-6">
+      <h1 class="text-3xl font-bold text-gray-900">Diffusion omnicanale</h1>
+      <p class="text-gray-600 text-sm mt-1">
+        Les fiches publiées dans le PIM sont exposées via une API unique. Chaque canal de consommation
+        (POS, e-commerce, mobile, marketplace) récupère uniquement les champs dont il a besoin, dans son format.
+      </p>
+    </header>
+
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Canal de consommation</label>
+          <select [(ngModel)]="channel" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+            @for (c of channels; track c.value) {
+              <option [value]="c.value">{{ c.label }}{{ c.implemented ? '' : ' (stub)' }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Langue</label>
+          <select [(ngModel)]="lang" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+            @for (l of langs; track l.value) {
+              <option [value]="l.value">{{ l.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <button (click)="run()" [disabled]="loading()"
+              class="px-6 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 disabled:opacity-50">
+        {{ loading() ? 'Récupération...' : 'GET /api/pim/export/?channel=' + channel + '&lang=' + lang }}
+      </button>
+    </div>
+
+    @if (result()) {
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
+        <h2 class="text-sm font-semibold text-gray-700 mb-2">Aperçu (canal {{ result()!.channel }}, {{ result()!.count }} produit(s))</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          @for (item of result()!.items; track item.sku) {
+            <div class="border border-gray-200 rounded-md overflow-hidden bg-gray-50">
+              @if (item.main_image) {
+                <img [src]="item.main_image" [alt]="item.name" class="w-full h-32 object-cover" />
+              }
+              <div class="p-2">
+                <p class="text-xs font-mono text-gray-500">{{ item.sku }}</p>
+                <p class="text-sm font-medium text-gray-900">{{ item.name }}</p>
+                <p class="text-xs text-gray-500">{{ item.family }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    @if (result() || errorPayload()) {
+      <div class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto">
+        <p class="text-xs font-medium text-gray-400 mb-2">Payload JSON brut</p>
+        <pre class="text-xs"><code>{{ payloadJson() }}</code></pre>
+      </div>
+    }
+  </div>
+</div>

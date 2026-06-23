@@ -1,5 +1,5 @@
 import { Component, computed } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TeamCardComponent } from '../../../shared/components/team-card/team-card.component';
 import { UserCardComponent } from '../../../shared/components/user-card/user-card.component';
 import { ProductsComponent } from '../../../features/dashboard/products/products.component';
@@ -11,7 +11,7 @@ import { AuthService } from '../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [TeamCardComponent, UserCardComponent, ProductsComponent, DataComponent, AppHeaderComponent, BottomNavComponent],
+  imports: [TeamCardComponent, UserCardComponent, ProductsComponent, DataComponent, AppHeaderComponent, BottomNavComponent, RouterLink],
   templateUrl: './dashboard-page.component.html',
   styleUrl: './dashboard-page.component.css'
 })

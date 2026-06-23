@@ -37,4 +37,24 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/products/validate-product-page/validate-product-page.component').then((m) => m.ValidateProductPageComponent),
   },
-]; 
+
+  // ----- FreshPIM -----
+  {
+    path: 'pim',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/pim/pim-list-page/pim-list-page.component').then((m) => m.PimListPageComponent),
+  },
+  {
+    path: 'pim/export',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/pim/pim-export-page/pim-export-page.component').then((m) => m.PimExportPageComponent),
+  },
+  {
+    path: 'pim/products/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/pim/pim-detail-page/pim-detail-page.component').then((m) => m.PimDetailPageComponent),
+  },
+];

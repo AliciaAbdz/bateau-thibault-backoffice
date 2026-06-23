@@ -1,0 +1,120 @@
+<div class="min-h-screen bg-gray-50 p-6">
+  <div class="max-w-7xl mx-auto">
+    <header class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">FreshPIM — Catalogue</h1>
+        <p class="text-gray-600 text-sm mt-1">Référentiel master des fiches produits</p>
+      </div>
+      <nav class="flex gap-2">
+        <a routerLink="/dashboard" class="px-4 py-2 rounded-md bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 text-sm">← FreshPilot</a>
+        <a routerLink="/pim/export" class="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 text-sm">Export omnicanal</a>
+        @if (canCreate()) {
+          <button (click)="openCreate()" class="px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 text-sm">+ Nouvelle fiche</button>
+        }
+      </nav>
+    </header>
+
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4 flex gap-4 flex-wrap">
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1">Statut</label>
+        <select [(ngModel)]="statusFilter" (change)="reload()" class="border border-gray-300 rounded-md px-3 py-2 text-sm">
+          <option value="">Tous</option>
+          @for (s of statuses; track s.value) {
+            <option [value]="s.value">{{ s.label }}</option>
+          }
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1">Famille</label>
+        <select [(ngModel)]="familyFilter" (change)="reload()" class="border border-gray-300 rounded-md px-3 py-2 text-sm">
+          <option [ngValue]="''">Toutes</option>
+          @for (f of families(); track f.id) {
+            <option [ngValue]="f.id">{{ f.name }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    @if (loading()) {
+      <div class="text-center py-12 text-gray-500">Chargement...</div>
+    } @else if (error()) {
+      <div class="bg-red-50 border border-red-200 text-red-800 rounded-md p-4">{{ error() }}</div>
+    } @else {
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <table class="w-full">
+          <thead class="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">SKU</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom (FR)</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Famille</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Complétude</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mis à jour</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            @for (p of products(); track p.id) {
+              <tr class="hover:bg-gray-50 cursor-pointer" [routerLink]="['/pim/products', p.id]">
+                <td class="px-4 py-3 text-sm font-mono text-gray-900">{{ p.sku }}</td>
+                <td class="px-4 py-3 text-sm text-gray-900">{{ p.name_fr || '—' }}</td>
+                <td class="px-4 py-3 text-sm text-gray-600">{{ p.family_name }}</td>
+                <td class="px-4 py-3">
+                  <span class="inline-block px-2 py-1 rounded text-xs font-medium" [class]="statusClass(p.status)">
+                    {{ statusLabel(p.status) }}
+                  </span>
+                </td>
+                <td class="px-4 py-3">
+                  <div class="flex items-center gap-2">
+                    <div class="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div class="h-full transition-all" [class]="completenessColor(p.completeness)" [style.width.%]="p.completeness"></div>
+                    </div>
+                    <span class="text-xs text-gray-600 w-8">{{ p.completeness }}%</span>
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-xs text-gray-500">{{ p.updated_at | date: 'short' }}</td>
+              </tr>
+            } @empty {
+              <tr><td colspan="6" class="text-center py-8 text-gray-500">Aucun produit</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-3 text-xs text-gray-500 text-right">{{ products().length }} produit(s) affichés</p>
+    }
+  </div>
+
+  @if (showCreateModal()) {
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" (click)="closeCreate()">
+      <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md" (click)="$event.stopPropagation()">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Nouvelle fiche produit</h2>
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">SKU *</label>
+            <input type="text" [(ngModel)]="newSku" placeholder="ex: PIM-SAR-004"
+                   class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm font-mono" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Famille *</label>
+            <select [(ngModel)]="newFamilyId" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+              <option [ngValue]="''">— Choisir —</option>
+              @for (f of families(); track f.id) {
+                <option [ngValue]="f.id">{{ f.name }}</option>
+              }
+            </select>
+          </div>
+          @if (createError()) {
+            <p class="text-sm text-red-600">{{ createError() }}</p>
+          }
+        </div>
+        <div class="flex justify-end gap-2 mt-6">
+          <button (click)="closeCreate()" class="px-4 py-2 rounded-md border border-gray-300 text-gray-700 text-sm hover:bg-gray-100">Annuler</button>
+          <button (click)="submitCreate()" [disabled]="creating()"
+                  class="px-4 py-2 rounded-md bg-green-600 text-white text-sm hover:bg-green-700 disabled:opacity-50">
+            {{ creating() ? 'Création...' : 'Créer brouillon' }}
+          </button>
+        </div>
+        <p class="text-xs text-gray-500 mt-3">La fiche sera créée en statut <b>draft</b>. Vous l'enrichirez ensuite et la soumettrez pour validation.</p>
+      </div>
+    </div>
+  }
+</div>

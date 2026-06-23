@@ -1,34 +1,13 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'bottom-nav',
+    redirectTo: 'dashboard',
     pathMatch: 'full',
   },
 
-  // Layout components urls -> checking
-  {
-    path: 'app-header',
-    loadComponent: () =>
-      import('./layouts/app-header/app-header.component').then((m) => m.AppHeaderComponent),
-  },
-  {
-    path: 'bottom-nav',
-    loadComponent: () =>
-      import('./layouts/bottom-nav/bottom-nav.component').then((m) => m.BottomNavComponent),
-  },
-  {
-    path: 'mobile-header',
-    loadComponent: () =>
-      import('./layouts/mobile-header/mobile-header.component').then((m) => m.MobileHeaderComponent),
-  },
-
-  {
-    path: 'dashboard',
-    loadComponent: () =>
-      import('./pages/dashboard/dashboard-page/dashboard-page.component').then((m) => m.DashboardPageComponent),
-  },
   {
     path: 'login',
     loadComponent: () =>
@@ -39,13 +18,22 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/auth/register/register-page/register-page.component').then((m) => m.RegisterPageComponent),
   },
+
+  {
+    path: 'dashboard',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/dashboard/dashboard-page/dashboard-page.component').then((m) => m.DashboardPageComponent),
+  },
   {
     path: 'add-product',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/products/add-product-page/add-product-page.component').then((m) => m.AddProductPageComponent),
   },
   {
     path: 'validate-product',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/products/validate-product-page/validate-product-page.component').then((m) => m.ValidateProductPageComponent),
   },

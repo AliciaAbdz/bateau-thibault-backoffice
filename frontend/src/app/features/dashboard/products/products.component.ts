@@ -4,6 +4,7 @@ import { ProductsService } from '../../../services/products/products.service';
 import { ClientService } from '../../../services/client/client.service';
 import { AuthService } from '../../../services/auth/auth.service';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 
 interface ArticleModification {
   quantity_change: number | null;
@@ -59,7 +60,7 @@ export class ProductsComponent {
 
   ngOnInit() {
     // Récupérer le retailer_id du JWT, sinon fallback sur 16 (premier retailer seedé)
-    this.retailerId = this.authService.getRetailerId() ?? 16;
+    this.retailerId = this.authService.getRetailerId() ?? 61;
     this.loadArticles();
   }
 
@@ -101,7 +102,10 @@ export class ProductsComponent {
   onSubmit() {
     this.errors = {};
 
-    // Collecter les lignes modifiées (celles avec une valeur saisie)
+    // 1) Collecter les modifications de prix/promo
+    this.sendPriceChanges();
+
+    // 2) Collecter les modifications de stock
     const changedArticles = this.retailArticles().filter(a => {
       const mod = this.modifications[a.id];
       return mod && mod.quantity_change !== null && mod.quantity_change !== 0;
@@ -142,6 +146,49 @@ export class ProductsComponent {
     } else {
       // Pas d'achats → envoyer directement
       this.sendChanges();
+    }
+  }
+
+  private sendPriceChanges() {
+    const articles = this.filteredArticles();
+    const patchRequests: ReturnType<typeof this.clientService.updateRetailArticle>[] = [];
+
+    articles.forEach((article, i) => {
+      const patch: Record<string, number> = {};
+
+      // Prix (unit_price côté backend)
+      const newPrice = this.newValues['price']?.[i];
+      if (newPrice && newPrice.trim() !== '') {
+        const val = parseFloat(newPrice);
+        if (!isNaN(val) && val >= 0) {
+          patch['unit_price'] = val;
+        }
+      }
+
+      // % Promo (discount côté backend)
+      const newDiscount = this.newValues['discount_percent']?.[i];
+      if (newDiscount && newDiscount.trim() !== '') {
+        const val = parseFloat(newDiscount);
+        if (!isNaN(val) && val >= 0 && val <= 100) {
+          patch['discount'] = val;
+        }
+      }
+
+
+      if (Object.keys(patch).length > 0) {
+        patchRequests.push(this.clientService.updateRetailArticle(article.id, patch));
+      }
+    });
+
+    if (patchRequests.length > 0) {
+      forkJoin(patchRequests).subscribe(() => {
+        this.loadArticles();
+        // Fermer les colonnes éditées
+        this.openColumns.delete('price');
+        this.openColumns.delete('discount_percent');
+        delete this.newValues['price'];
+        delete this.newValues['discount_percent'];
+      });
     }
   }
 
@@ -192,6 +239,13 @@ export class ProductsComponent {
         this.loadArticles();
         this.purchaseEntries.set([]);
       }
+    });
+  }
+
+  onArchive(article: RetailArticleDisplay) {
+    if (!confirm(`Archiver "${article.name}" ?`)) return;
+    this.clientService.archiveArticle(article.id).subscribe(() => {
+      this.loadArticles();
     });
   }
 

@@ -52,5 +52,6 @@ class Sale (models.Model) :
     date= models.DateField(auto_now_add = True)
     total= models.IntegerField(default=0)
     quantity= models.IntegerField(default=0)
+    discount_at_sale= models.IntegerField(default=0)
     retailer_article= models.ForeignKey(RetailerArticle, on_delete=models.CASCADE)
 

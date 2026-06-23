@@ -14,30 +14,24 @@
       </div>
 
       <!-- Nom du produit -->
-      <h2 class="text-lg font-bold text-[#4B4B4B] mb-4">BAR DE LIGNE</h2>
+      <h2 class="text-lg font-bold text-[#4B4B4B] mb-4">{{ name || 'PRODUIT' }}</h2>
 
-      <!-- Image produit -->
-      <div class="w-full h-40 mb-4">
-        <img src="/images/logo-long.png" alt="Bar de ligne" class="w-full h-full object-contain" />
-      </div>
+      <!-- Message de confirmation -->
+      <p class="text-sm text-[#7BC67E] font-semibold mb-4">Ajout au stock confirmé !</p>
 
       <!-- Infos produit -->
       <div class="w-full text-sm text-[#4B4B4B] space-y-1">
-        <p><span class="font-bold">CATEGORIE :</span> Poisson</p>
-        <p><span class="font-bold">ORIGINE :</span> SAINT BRIEUC</p>
-        <p><span class="font-bold">QUANTITE :</span> 100</p>
+        <p><span class="font-bold">CATEGORIE :</span> {{ category }}</p>
+        <p><span class="font-bold">QUANTITE AJOUTEE :</span> {{ quantity }}</p>
+        <p><span class="font-bold">PRIX D'ACHAT :</span> {{ purchasePrice }} €/u</p>
       </div>
     </div>
 
-    <!-- Icône box en bas -->
-    <div class="mt-10 flex items-center justify-center opacity-30">
-      <svg class="w-32 h-32 text-[#7BC67E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-      </svg>
-      <svg class="w-8 h-8 text-[#7BC67E] -ml-4 -mt-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-      </svg>
-    </div>
+    <!-- Bouton retour dashboard -->
+    <button (click)="goToDashboard()"
+      class="mt-8 w-full max-w-sm py-4 bg-[#7BC67E] text-white text-lg font-bold uppercase rounded-full shadow-md hover:opacity-90 cursor-pointer">
+      RETOUR AU DASHBOARD
+    </button>
   </div>
 
   <!-- Footer -->

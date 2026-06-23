@@ -1,4 +1,4 @@
-<app-header></app-header>
+<app-header [user]="headerUser()" (logout)="onLogout()"></app-header>
 <div class="flex gap-8 px-20 py-10">
   <!-- Sidebar gauche -->
   <div class="flex flex-col gap-8 w-64 shrink-0">

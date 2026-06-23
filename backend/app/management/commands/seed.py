@@ -281,35 +281,69 @@ class Command(BaseCommand):
 
         self.stdout.write(f'  -> {len(retailer_articles)} articles point relais créés')
 
-        # --- PURCHASES ---
+        # --- PURCHASES (prix de gros = 25-45% du prix de vente) ---
         self.stdout.write('Création des achats...')
         purchases = []
-        for _ in range(200):
+        today = date.today()
+
+        def random_recent_date():
+            """Distribution pondérée : plus de données récentes"""
+            r = random.random()
+            if r < 0.15:       # 15% dans la dernière semaine
+                return random.randint(0, 6)
+            elif r < 0.40:     # 25% dans le dernier mois
+                return random.randint(0, 29)
+            elif r < 0.65:     # 25% dans le dernier trimestre
+                return random.randint(0, 89)
+            else:              # 35% dans l'année
+                return random.randint(0, 365)
+
+        for _ in range(600):
             ra = random.choice(retailer_articles)
-            qty = random.randint(1, 50)
-            p = Purchase.objects.create(
-                total=ra.unit_price * qty,
+            qty = random.randint(1, 25)
+            wholesale_ratio = random.uniform(0.25, 0.45)
+            wholesale_price = max(1, int(ra.unit_price * wholesale_ratio))
+            days_ago = random_recent_date()
+            p = Purchase(
+                total=wholesale_price * qty,
                 quantity=qty,
                 retailer_article=ra,
             )
+            p.save()
+            Purchase.objects.filter(id=p.id).update(date=today - timedelta(days=days_ago))
             purchases.append(p)
 
         self.stdout.write(f'  -> {len(purchases)} achats créés')
 
-        # --- SALES ---
+        # --- SALES (prix de vente plein ou remisé, toujours > prix de gros) ---
         self.stdout.write('Création des ventes...')
         sales = []
-        for _ in range(300):
+        for _ in range(1500):
             ra = random.choice(retailer_articles)
             qty = random.randint(1, 30)
-            price = ra.unit_price
-            if ra.discount > 0:
-                price = int(price * (100 - ra.discount) / 100)
-            s = Sale.objects.create(
-                total=price * qty,
-                quantity=qty,
-                retailer_article=ra,
-            )
+            is_loss = random.random() < 0.05
+            days_ago = random_recent_date()
+
+            if is_loss:
+                s = Sale(
+                    total=0,
+                    quantity=qty,
+                    discount_at_sale=0,
+                    retailer_article=ra,
+                )
+            else:
+                sale_price = ra.unit_price
+                disc = ra.discount if random.random() < 0.3 else 0
+                if disc > 0:
+                    sale_price = max(1, int(sale_price * (100 - disc) / 100))
+                s = Sale(
+                    total=sale_price * qty,
+                    quantity=qty,
+                    discount_at_sale=disc,
+                    retailer_article=ra,
+                )
+            s.save()
+            Sale.objects.filter(id=s.id).update(date=today - timedelta(days=days_ago))
             sales.append(s)
 
         self.stdout.write(f'  -> {len(sales)} ventes créées')

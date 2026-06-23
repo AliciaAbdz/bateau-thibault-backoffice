@@ -105,10 +105,28 @@ class PurchaseSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class PurchaseDetailSerializer(serializers.ModelSerializer):
+    article_name = serializers.CharField(source='retailer_article.tig.prod.name', read_only=True)
+    category = serializers.CharField(source='retailer_article.tig.prod.category.name', read_only=True)
+
+    class Meta:
+        model = Purchase
+        fields = ['id', 'date', 'total', 'quantity', 'retailer_article', 'article_name', 'category']
+
+
 class SaleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sale
         fields = '__all__'
+
+
+class SaleDetailSerializer(serializers.ModelSerializer):
+    article_name = serializers.CharField(source='retailer_article.tig.prod.name', read_only=True)
+    category = serializers.CharField(source='retailer_article.tig.prod.category.name', read_only=True)
+
+    class Meta:
+        model = Sale
+        fields = ['id', 'date', 'total', 'quantity', 'retailer_article', 'article_name', 'category', 'discount_at_sale']
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -118,10 +136,21 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
 
         # Ajouter des claims personnalisés
-        token['retailer'] =  user.retailer_id 
+        token['username'] = user.username
+        token['first_name'] = user.first_name
+        token['last_name'] = user.last_name
+        token['email'] = user.email
+        token['retailer'] = user.retailer_id
         token['role'] = user.role
         token['last_connexion'] = str(user.last_login) if user.last_login else None
-
-
+        token['last_modification'] = str(user.last_modification) if user.last_modification else None
 
         return token
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        # Mettre à jour last_login à chaque connexion
+        from django.utils import timezone
+        self.user.last_login = timezone.now()
+        self.user.save(update_fields=['last_login'])
+        return data

@@ -1,8 +1,10 @@
 export interface User {
     id : number;
-    name : string; 
-    firstname : string;
+    username: string;
+    first_name : string;
+    last_name : string;
     email : string;
+    role: string;
 }
 
 export interface Retailer {
@@ -44,6 +46,27 @@ export interface Sale {
     date : Date;
     total: number;
     quantity : number;
+}
+
+export interface PurchaseDetail {
+    id: number;
+    date: string;
+    total: number;
+    quantity: number;
+    retailer_article: number;
+    article_name: string;
+    category: string;
+}
+
+export interface SaleDetail {
+    id: number;
+    date: string;
+    total: number;
+    quantity: number;
+    retailer_article: number;
+    article_name: string;
+    category: string;
+    discount_at_sale: number;
 }
 
 export interface StockChange {

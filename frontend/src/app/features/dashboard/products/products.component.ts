@@ -18,6 +18,18 @@ interface PurchaseEntry {
   purchase_price: number | null;
 }
 
+interface ArticleModification {
+  quantity_change: number | null;
+  is_expired: boolean;
+}
+
+interface PurchaseEntry {
+  article_id: number;
+  name: string;
+  quantity: number;
+  purchase_price: number | null;
+}
+
 @Component({
   selector: 'app-products',
   host: { class: 'flex flex-col flex-1' },

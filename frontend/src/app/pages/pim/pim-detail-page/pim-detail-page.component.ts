@@ -37,6 +37,7 @@ export class PimDetailPageComponent implements OnInit {
   product = signal<PimProductDetail | null>(null);
   loading = signal(false);
   saving = signal(false);
+  autofilling = signal(false);
   error = signal<string | null>(null);
   notice = signal<string | null>(null);
 
@@ -164,6 +165,43 @@ export class PimDetailPageComponent implements OnInit {
       error: (err) => {
         this.saving.set(false);
         this.error.set(err?.error?.detail || JSON.stringify(err?.error) || 'Erreur de sauvegarde');
+      },
+    });
+  }
+
+  // ---------- Reconnaissance d'étiquette (auto-remplissage IA) ----------
+
+  onLabelSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    const p = this.product();
+    if (!file || !p) return;
+
+    this.autofilling.set(true);
+    this.error.set(null);
+    this.notice.set(null);
+
+    this.pim.autofillFromLabel(p.id, file).subscribe({
+      next: (res) => {
+        this.autofilling.set(false);
+        // Pré-remplit le formulaire dynamique SANS sauvegarder (relecture humaine)
+        let applied = 0;
+        for (const s of res.suggestions) {
+          const slot = this.attrForm.find((a) => a.fa.attribute.id === s.attribute);
+          if (slot) {
+            slot.value = s.value;
+            applied++;
+          }
+        }
+        this.notice.set(
+          `Étiquette analysée : ${applied} champ(s) pré-rempli(s). Vérifiez puis cliquez « Enregistrer ».`,
+        );
+        input.value = '';
+      },
+      error: (err) => {
+        this.autofilling.set(false);
+        this.error.set(err?.error?.error || "Échec de l'analyse de l'étiquette");
+        input.value = '';
       },
     });
   }

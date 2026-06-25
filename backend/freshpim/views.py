@@ -19,6 +19,7 @@ from .serializers import (
     PIMProductListSerializer, PIMProductDetailSerializer,
     TranslationSerializer, AttributeValueSerializer, AssetSerializer,
 )
+from .label_extraction import build_schema, extract_from_image
 
 
 # ---------- Référentiel (familles + attributs) ----------
@@ -137,6 +138,76 @@ class PIMProductViewSet(viewsets.ModelViewSet):
         product.save()  # déclenche le signal sync_to_freshpilot si target=published
 
         return Response(PIMProductDetailSerializer(product).data, status=status.HTTP_200_OK)
+
+    # ----- reconnaissance d'étiquette (auto-remplissage IA) -----
+
+    @action(detail=True, methods=['post'], url_path='autofill-from-label')
+    def autofill_from_label(self, request, pk=None):
+        """
+        Reçoit une image d'étiquette (multipart, champ 'image'), demande au modèle
+        de reconnaître les attributs ATTENDUS PAR LA FAMILLE du produit, et renvoie
+        des SUGGESTIONS (sans rien écrire en base : human-in-the-loop).
+
+        Le fournisseur relit les valeurs pré-remplies puis les enregistre via le
+        flux AttributeValue habituel. get_object() applique PIMProductPermission
+        (le MANUFACTURER ne touche que ses propres fiches).
+        """
+        product = self.get_object()
+        image = request.FILES.get('image')
+        if image is None:
+            return Response({"error": "Aucune image fournie (champ 'image')."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        fields = build_schema(product)
+        if not fields:
+            return Response({"error": "La famille de ce produit n'a aucun attribut configuré."},
+                            status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        try:
+            raw = extract_from_image(image.read(), fields)
+        except Exception as e:
+            return Response({"error": f"Échec de l'analyse de l'étiquette : {e}"},
+                            status=status.HTTP_502_BAD_GATEWAY)
+
+        # Validation des valeurs renvoyées contre les attributs réels de la famille
+        attrs_by_code = {
+            fa.attribute.code: fa.attribute
+            for fa in product.family.familyattribute_set.select_related('attribute')
+        }
+        suggestions, ignored = [], []
+        for code, value in (raw or {}).items():
+            attr = attrs_by_code.get(code)
+            if attr is None:
+                ignored.append({"code": code, "raison": "attribut absent de la famille"})
+                continue
+            value = ("" if value is None else str(value)).strip()
+            if value == "":
+                continue
+            if attr.type == Attribute.TYPE_SELECT and value not in (attr.options or []):
+                ignored.append({"code": code, "value": value, "raison": "hors options autorisées"})
+                continue
+            if attr.type == Attribute.TYPE_NUMBER:
+                cleaned = value.replace(",", ".").replace(" ", "")
+                try:
+                    float(cleaned)
+                except ValueError:
+                    ignored.append({"code": code, "value": value, "raison": "non numérique"})
+                    continue
+                value = cleaned
+            suggestions.append({
+                "attribute": attr.id,
+                "code": attr.code,
+                "label": attr.label,
+                "type": attr.type,
+                "value": value,
+            })
+
+        return Response({
+            "product": product.id,
+            "family": product.family.name,
+            "suggestions": suggestions,
+            "ignored": ignored,
+        }, status=status.HTTP_200_OK)
 
 
 # ---------- Ressources liées (translations / attribute_values / assets) ----------

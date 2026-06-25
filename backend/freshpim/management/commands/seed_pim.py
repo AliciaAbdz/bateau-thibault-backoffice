@@ -87,6 +87,23 @@ class Command(BaseCommand):
                 ['Boîte métal', 'Bocal verre', 'Sachet plastique', 'Carton'], False),
             ('ingredients', 'Ingrédients', Attribute.TYPE_TEXT, [], True),
             ('bio', 'Bio', Attribute.TYPE_BOOL, [], False),
+            # --- Attributs « Eau » (collent à une étiquette de bouteille) ---
+            ('marque', 'Marque', Attribute.TYPE_TEXT, [], False),
+            ('type_eau', 'Type d\'eau', Attribute.TYPE_SELECT,
+                ['Eau de source', 'Eau minérale naturelle', 'Eau de table', 'Eau gazeuse'], False),
+            ('contenance_l', 'Contenance (L)', Attribute.TYPE_NUMBER, [], False),
+            ('residu_sec', 'Résidu sec à 180°C (mg/L)', Attribute.TYPE_NUMBER, [], False),
+            ('ph', 'pH', Attribute.TYPE_NUMBER, [], False),
+            ('calcium', 'Calcium (mg/L)', Attribute.TYPE_NUMBER, [], False),
+            ('sodium', 'Sodium (mg/L)', Attribute.TYPE_NUMBER, [], False),
+            # --- Attributs « Soda » (collent à une canette/bouteille) ---
+            ('type_boisson', 'Type de boisson', Attribute.TYPE_SELECT,
+                ['Cola', 'Limonade', 'Tonic', 'Soda aux fruits', 'Thé glacé', 'Énergisant'], False),
+            ('contenance_ml', 'Contenance (mL)', Attribute.TYPE_NUMBER, [], False),
+            ('petillant', 'Pétillant', Attribute.TYPE_BOOL, [], False),
+            ('calories', 'Calories (par portion)', Attribute.TYPE_NUMBER, [], False),
+            ('sucres_g', 'Sucres (g)', Attribute.TYPE_NUMBER, [], False),
+            ('cafeine_mg', 'Caféine (mg)', Attribute.TYPE_NUMBER, [], False),
         ]
         attrs = {}
         for code, label, atype, options, is_localizable in attrs_catalog:
@@ -114,6 +131,14 @@ class Command(BaseCommand):
             ('Conserve', 'Produits de la mer en conserve, longue conservation.', [
                 ('contenance_g', True), ('emballage', True), ('dlc_jours', True),
                 ('ingredients', True), ('bio', False), ('origine', False),
+            ]),
+            ('Eau', 'Eau embouteillée (source, minérale). Sert à tester la reconnaissance d\'étiquette.', [
+                ('marque', True), ('type_eau', True), ('contenance_l', True), ('origine', True),
+                ('residu_sec', False), ('ph', False), ('calcium', False), ('sodium', False),
+            ]),
+            ('Soda', 'Boisson gazeuse sucrée. Sert à tester la reconnaissance d\'étiquette.', [
+                ('marque', True), ('type_boisson', True), ('contenance_ml', True), ('petillant', False),
+                ('calories', False), ('sucres_g', False), ('cafeine_mg', False), ('ingredients', False),
             ]),
         ]
         families = {}
@@ -236,11 +261,30 @@ class Command(BaseCommand):
         p_conv.completeness = p_conv.compute_completeness()
         p_conv.save()
 
+        # Eau — DRAFT VIDE : sert à tester la reconnaissance d'étiquette
+        # (importe demo/RECTIFY_*.jpg → les attributs se remplissent, la complétude grimpe)
+        p_eau = PIMProduct.objects.create(
+            sku='PIM-EAU-030', family=families['Eau'],
+            status=PIMProduct.STATUS_DRAFT, created_by=manufacturer_users[0],
+        )
+        Translation.objects.create(product=p_eau, locale='fr', name='Eau à compléter (importer une étiquette)')
+        p_eau.completeness = p_eau.compute_completeness()  # 0% : aucun attribut rempli
+        p_eau.save(update_fields=['completeness'])
+
+        # Soda — DRAFT VIDE : sert à tester la reconnaissance d'étiquette (demo/SODA_COCA_COLA.jpg)
+        p_soda = PIMProduct.objects.create(
+            sku='PIM-SOD-040', family=families['Soda'],
+            status=PIMProduct.STATUS_DRAFT, created_by=manufacturer_users[0],
+        )
+        Translation.objects.create(product=p_soda, locale='fr', name='Soda à compléter (importer une étiquette)')
+        p_soda.completeness = p_soda.compute_completeness()  # 0%
+        p_soda.save(update_fields=['completeness'])
+
         self.stdout.write(self.style.SUCCESS(
             f"\nFreshPIM seed OK :\n"
             f"  - {len(families)} familles : {', '.join(families.keys())}\n"
             f"  - {len(attrs)} attributs partagés entre familles selon le gabarit\n"
             f"  - {len(manufacturer_users)} comptes fournisseurs (login: manufacturer1 / manufacturer2 — pwd: freshpilot2026)\n"
             f"  - 1 compte admin PIM (login: pim.admin — pwd: freshpilot2026)\n"
-            f"  - 6 PIMProducts répartis (draft / in_review / published) sur les 4 familles\n"
+            f"  - 8 PIMProducts (dont 'Eau' + 'Soda' VIDES pour tester l'import d'étiquette) sur les {len(families)} familles\n"
         ))

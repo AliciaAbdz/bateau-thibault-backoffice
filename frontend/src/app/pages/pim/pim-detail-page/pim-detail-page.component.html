@@ -56,6 +56,20 @@
           </div>
         </div>
 
+        <div class="flex items-center justify-between gap-3 mb-3 p-3 rounded-md border border-dashed border-blue-300 bg-blue-50">
+          <div class="text-xs text-blue-900">
+            <span class="font-semibold">📷 Remplissage automatique</span> — importez une étiquette produit,
+            l'IA pré-remplit les attributs de la famille (à vérifier avant d'enregistrer).
+          </div>
+          <label class="shrink-0 px-4 py-2 rounded-md text-sm cursor-pointer text-white"
+                 [class.bg-blue-600]="!autofilling()" [class.hover:bg-blue-700]="!autofilling()"
+                 [class.bg-gray-400]="autofilling()" [class.cursor-wait]="autofilling()">
+            {{ autofilling() ? 'Analyse en cours…' : 'Importer une étiquette' }}
+            <input type="file" accept="image/*" class="hidden"
+                   [disabled]="autofilling()" (change)="onLabelSelected($event)" />
+          </label>
+        </div>
+
         <h2 class="text-sm font-semibold text-gray-700 mb-3">Attributs (famille {{ product()!.family.name }})</h2>
         <div class="space-y-3">
           @for (a of attrForm; track a.fa.id) {

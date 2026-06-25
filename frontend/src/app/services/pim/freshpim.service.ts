@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
+  LabelAutofillResponse,
   OmnichannelExportResponse,
   PimAsset,
   PimAttributeValue,
@@ -45,6 +46,14 @@ export class FreshPimService {
 
   transition(productId: number, to: PimStatus): Observable<PimProductDetail> {
     return this.http.post<PimProductDetail>(`${this.apiUrl}/products/${productId}/transition/`, { to });
+  }
+
+  // ----- Reconnaissance d'étiquette (auto-remplissage IA) -----
+  autofillFromLabel(productId: number, file: File): Observable<LabelAutofillResponse> {
+    const form = new FormData();
+    form.append('image', file);
+    return this.http.post<LabelAutofillResponse>(
+      `${this.apiUrl}/products/${productId}/autofill-from-label/`, form);
   }
 
   // ----- Translations -----

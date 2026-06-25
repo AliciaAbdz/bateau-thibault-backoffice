@@ -77,6 +77,21 @@ export interface PimProductDetail {
   assets: PimAsset[];
 }
 
+export interface PimLabelSuggestion {
+  attribute: number;
+  code: string;
+  label: string;
+  type: AttributeType;
+  value: string;
+}
+
+export interface LabelAutofillResponse {
+  product: number;
+  family: string;
+  suggestions: PimLabelSuggestion[];
+  ignored: Array<{ code: string; value?: string; raison: string }>;
+}
+
 export interface OmnichannelExportResponse {
   channel: string;
   lang: string;

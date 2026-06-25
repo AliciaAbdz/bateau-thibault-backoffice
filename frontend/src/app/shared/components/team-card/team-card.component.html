@@ -4,50 +4,14 @@
 
   <!-- Grille des membres -->
   <div class="grid grid-cols-3 gap-4">
-    <!-- Membre 1 -->
     <div *ngFor="let member of members$ | async">
-        <div class="flex flex-col items-center text-center">
-          <div class="w-16 h-16 rounded-full overflow-hidden mb-2">
-            <img src="/images/logo-long.png" alt="avatar" class="w-full h-full object-cover">
-          </div>
-          <p class="text-sm font-medium">{{ member.name }}</p>
-          <p class="text-sm text-gray-500">{{ member.firstname }}</p>
+      <div class="flex flex-col items-center text-center">
+        <div class="w-16 h-16 rounded-full overflow-hidden mb-2 border-2 border-[#7BC67E]">
+          <img src="/images/Avatar.png" alt="avatar" class="w-full h-full object-cover">
         </div>
-    </div>
-
-    <div class="flex flex-col items-center text-center">
-      <div class="w-16 h-16 rounded-full overflow-hidden mb-2">
-        <img src="/images/logo-long.png" alt="avatar" class="w-full h-full object-cover">
+        <p class="text-sm font-medium">{{ member.first_name }}</p>
+        <p class="text-sm text-gray-500">{{ member.last_name }}</p>
       </div>
-      <p class="text-sm font-medium">Jennifer</p>
-      <p class="text-sm text-gray-500">LALAURIE</p>
-    </div>
-
-    <!-- Membre 2 -->
-    <div class="flex flex-col items-center text-center">
-      <div class="w-16 h-16 rounded-full overflow-hidden mb-2">
-        <img src="/images/logo-long.png" alt="avatar" class="w-full h-full object-cover">
-      </div>
-      <p class="text-sm font-medium">Ahmad</p>
-      <p class="text-sm text-gray-500">FARINGA</p>
-    </div>
-
-    <!-- Membre 3 -->
-    <div class="flex flex-col items-center text-center">
-      <div class="w-16 h-16 rounded-full overflow-hidden mb-2">
-        <img src="/images/logo-long.png" alt="avatar" class="w-full h-full object-cover">
-      </div>
-      <p class="text-sm font-medium">Layla</p>
-      <p class="text-sm text-gray-500">KHOURY</p>
-    </div>
-
-    <!-- Membre 4 -->
-    <div class="flex flex-col items-center text-center">
-      <div class="w-16 h-16 rounded-full overflow-hidden mb-2">
-        <img src="/images/logo-long.png" alt="avatar" class="w-full h-full object-cover">
-      </div>
-      <p class="text-sm font-medium">Hector</p>
-      <p class="text-sm text-gray-500">BRIAC</p>
     </div>
   </div>
 </div>

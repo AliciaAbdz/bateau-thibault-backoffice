@@ -29,16 +29,8 @@
           <th class="py-4 px-3 bg-sky-50 text-[#7BC67E] text-xs">Nouveau Prix</th>
         }
 
-        <!-- Prix Promo -->
-        <th class="py-4 px-4">
-          <div class="flex items-center gap-1">
-            Prix Promo
-            <button (click)="toggleEditColumn('discount_price')" class="opacity-30 hover:opacity-100 transition-opacity text-xs cursor-pointer">✏️</button>
-          </div>
-        </th>
-        @if (isOpen('discount_price')) {
-          <th class="py-4 px-3 bg-sky-50 text-[#7BC67E] text-xs">Nouveau Prix Promo</th>
-        }
+        <!-- Prix Promo (calculé dynamiquement) -->
+        <th class="py-4 px-4">Prix Promo</th>
 
         <!-- % Promo -->
         <th class="py-4 px-4">
@@ -52,13 +44,19 @@
         }
 
         <!-- Stock -->
-        <th class="py-4 px-4">Stock</th>
+        <th class="py-4 px-4">
+          <div class="flex items-center gap-1">
+            Stock
+            <button (click)="toggleEditColumn('stock')" class="opacity-30 hover:opacity-100 transition-opacity text-xs cursor-pointer">✏️</button>
+          </div>
+        </th>
 
-        <!-- Modification stock -->
-        <th class="py-4 px-4 bg-amber-50 text-amber-700">Modifier stock</th>
-
-        <!-- Périmé -->
-        <th class="py-4 px-4 bg-amber-50 text-amber-700 text-center">Périmé?</th>
+        @if (isOpen('stock')) {
+          <!-- Modification stock -->
+          <th class="py-4 px-3 bg-sky-50 text-[#7BC67E] text-xs">Modifier stock</th>
+          <!-- Périmé -->
+          <th class="py-4 px-3 bg-sky-50 text-[#7BC67E] text-xs text-center">Périmé?</th>
+        }
 
         <th class="py-4 px-4">Nb Vendus</th>
         <th class="py-4 px-4">Commentaire</th>
@@ -79,14 +77,8 @@
             </td>
           }
 
-          <!-- Prix Promo actuel -->
+          <!-- Prix Promo (calculé) -->
           <td class="py-4 px-4">{{ article.discount_price }}</td>
-          @if (isOpen('discount_price')) {
-            <td class="py-4 px-3 bg-sky-50">
-              <input type="text" [(ngModel)]="newValues['discount_price'][i]" placeholder="—"
-                class="w-20 bg-white border border-gray-200 rounded px-2 py-1 text-sm outline-none focus:border-[#7BC67E] focus:ring-1 focus:ring-[#7BC67E]" />
-            </td>
-          }
 
           <!-- % Promo actuel -->
           <td class="py-4 px-4">
@@ -102,34 +94,35 @@
           <!-- Stock actuel -->
           <td class="py-4 px-4">{{ article.stock }}</td>
 
-          <!-- Modification stock (input) -->
-          <td class="py-4 px-3 bg-amber-50">
-            <input type="number"
-              [ngModel]="modifications[article.id]?.quantity_change"
-              (ngModelChange)="modifications[article.id].quantity_change = $event"
-              placeholder="0"
-              class="w-20 bg-white border border-gray-200 rounded px-2 py-1 text-sm outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
-              [class.border-red-500]="errors[article.id]"
-              [class.text-green-600]="(modifications[article.id]?.quantity_change ?? 0) > 0"
-              [class.text-red-600]="(modifications[article.id]?.quantity_change ?? 0) < 0" />
-            @if (errors[article.id]) {
-              <p class="text-red-500 text-xs mt-1">{{ errors[article.id] }}</p>
-            }
-          </td>
+          @if (isOpen('stock')) {
+            <!-- Modification stock (input) -->
+            <td class="py-4 px-3 bg-sky-50">
+              <input type="number"
+                [ngModel]="modifications[article.id]?.quantity_change"
+                (ngModelChange)="modifications[article.id].quantity_change = $event"
+                placeholder="0"
+                class="w-20 bg-white border border-gray-200 rounded px-2 py-1 text-sm outline-none focus:border-[#7BC67E] focus:ring-1 focus:ring-[#7BC67E]"
+                [class.border-red-500]="errors[article.id]"
+                [class.text-green-600]="(modifications[article.id]?.quantity_change ?? 0) > 0"
+                [class.text-red-600]="(modifications[article.id]?.quantity_change ?? 0) < 0" />
+              @if (errors[article.id]) {
+                <p class="text-red-500 text-xs mt-1">{{ errors[article.id] }}</p>
+              }
+            </td>
 
-          <!-- Périmé checkbox -->
-          <td class="py-4 px-3 bg-amber-50 text-center">
-            <input type="checkbox"
-              [ngModel]="modifications[article.id]?.is_expired"
-              (ngModelChange)="modifications[article.id].is_expired = $event"
-              [disabled]="(modifications[article.id]?.quantity_change ?? 0) >= 0"
-              class="w-4 h-4 accent-amber-500 cursor-pointer disabled:opacity-30" />
-          </td>
+            <!-- Périmé checkbox -->
+            <td class="py-4 px-3 bg-sky-50 text-center">
+              <input type="checkbox"
+                [ngModel]="modifications[article.id]?.is_expired"
+                (ngModelChange)="modifications[article.id].is_expired = $event"
+                class="w-4 h-4 accent-[#7BC67E] cursor-pointer" />
+            </td>
+          }
 
           <td class="py-4 px-4">{{ article.sales }}</td>
           <td class="py-4 px-4">{{ article.comment }}</td>
           <td class="py-4 px-4 text-center">
-            <button class="text-red-400 hover:text-red-600">🗑️</button>
+            <button (click)="onArchive(article)" class="text-red-400 hover:text-red-600 cursor-pointer">🗑️</button>
           </td>
         </tr>
       }

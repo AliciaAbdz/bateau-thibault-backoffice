@@ -11,9 +11,13 @@ interface AuthResponse {
 interface JwtPayload {
   user_id: number;
   username: string;
+  first_name: string;
+  last_name: string;
+  email: string;
   retailer: number | null;
   role: string;
   last_connexion: string | null;
+  last_modification: string | null;
   exp: number;
 }
 

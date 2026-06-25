@@ -7,9 +7,21 @@ class Retailer (models.Model) :
 
 
 class Utilisateur(AbstractUser) :
-    role = models.CharField(max_length=100, default='ROLE_USER', null=False)
+    ROLE_USER = 'ROLE_USER'
+    ROLE_ADMIN = 'ROLE_ADMIN'
+    ROLE_MANUFACTURER = 'ROLE_MANUFACTURER'
+    ROLE_PIM_ADMIN = 'ROLE_PIM_ADMIN'
+    ROLE_CHOICES = [
+        (ROLE_USER, 'Utilisateur'),
+        (ROLE_ADMIN, 'Admin retailer'),
+        (ROLE_MANUFACTURER, 'Fournisseur'),
+        (ROLE_PIM_ADMIN, 'Admin PIM'),
+    ]
+
+    role = models.CharField(max_length=100, choices=ROLE_CHOICES, default=ROLE_USER, null=False)
     last_modification = models.DateField(auto_now=True)
     retailer = models.ForeignKey(Retailer, on_delete=models.CASCADE, related_name='utilisateur', null=True, blank=True)
+    manufacturer = models.ForeignKey('Manufacturer', on_delete=models.SET_NULL, related_name='utilisateur', null=True, blank=True)
 
 class Category (models.Model) :
     name = models.CharField(max_length=100, blank=False, null=False)
@@ -18,9 +30,17 @@ class Product (models.Model) :
     name = models.CharField(max_length=100, blank=False, null=False)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     global_quantity = models.IntegerField(default=0)
+    pim_product = models.ForeignKey(
+        'freshpim.PIMProduct',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='freshpilot_products',
+    )
 class Manufacturer (models.Model) :
     name = models.CharField(max_length=200, blank=False, null=False)
     address = models.CharField(max_length=200, blank=False, null=False)
+    email = models.EmailField(blank=True, default='')
     
 class ManufacturerArticle (models.Model) :
     unit = models.CharField(max_length=5, blank=False, null=False)
@@ -52,5 +72,6 @@ class Sale (models.Model) :
     date= models.DateField(auto_now_add = True)
     total= models.IntegerField(default=0)
     quantity= models.IntegerField(default=0)
+    discount_at_sale= models.IntegerField(default=0)
     retailer_article= models.ForeignKey(RetailerArticle, on_delete=models.CASCADE)
 

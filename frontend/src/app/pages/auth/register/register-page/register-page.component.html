@@ -21,26 +21,34 @@
       <!-- Champ Identifiant -->
       <div class="w-full mb-4">
         <label class="text-xs text-gray-500 uppercase mb-1 block">Identifiant</label>
-        <input type="text" class="w-full bg-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#7BC67E]" />
+        <input type="text" [(ngModel)]="username" class="w-full bg-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#7BC67E]" />
       </div>
 
       <!-- Champ Mot de passe -->
       <div class="w-full mb-4">
         <label class="text-xs text-gray-500 uppercase mb-1 block">Mot de passe</label>
-        <input type="password" class="w-full bg-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#7BC67E]" />
+        <input type="password" [(ngModel)]="password" class="w-full bg-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#7BC67E]" />
       </div>
 
       <!-- Champ Confirmer mot de passe -->
       <div class="w-full mb-2">
-        <label class="text-xs text-gray-500 uppercase mb-1 block">Mot de passe</label>
-        <input type="password" class="w-full bg-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#7BC67E]" />
+        <label class="text-xs text-gray-500 uppercase mb-1 block">Confirmer mot de passe</label>
+        <input type="password" [(ngModel)]="confirmPassword" (keyup.enter)="onRegister()" class="w-full bg-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#7BC67E]" />
       </div>
+
+      @if (errorMessage) {
+        <p class="text-sm text-[#F4845F] mt-2">{{ errorMessage }}</p>
+      }
     </div>
 
     <!-- Bouton Register -->
-    <button class="mt-8 px-12 py-3 bg-[#7BC67E] text-white text-lg font-bold uppercase rounded-full shadow-md hover:opacity-90">
+    <button (click)="onRegister()" class="mt-8 px-12 py-3 bg-[#7BC67E] text-white text-lg font-bold uppercase rounded-full shadow-md hover:opacity-90 cursor-pointer">
       REGISTER
     </button>
+
+    <p class="mt-4 text-sm text-gray-500">
+      Déjà un compte ? <a routerLink="/login" class="text-[#7BC67E] font-semibold">Se connecter</a>
+    </p>
   </div>
 
   <!-- Footer -->

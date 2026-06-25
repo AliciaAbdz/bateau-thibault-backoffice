@@ -12,7 +12,8 @@ from .serializers import (
     UtilisateurSerializer, RegisterSerializer, CategorySerializer, ProductSerializer,
     ManufacturerSerializer, ManufacturerArticleSerializer,
     RetailerSerializer, RetailerArticleSerializer, RetailerArticleFlatSerializer,
-    PurchaseSerializer, SaleSerializer, CustomTokenObtainPairSerializer
+    PurchaseSerializer, PurchaseDetailSerializer, SaleSerializer, SaleDetailSerializer,
+    CustomTokenObtainPairSerializer
 )
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -20,6 +21,13 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 class UtilisateurViewSet(viewsets.ModelViewSet):
     queryset = Utilisateur.objects.all()
     serializer_class = UtilisateurSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        retailer_id = self.request.query_params.get('retailer')
+        if retailer_id:
+            queryset = queryset.filter(retailer_id=retailer_id)
+        return queryset
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -124,10 +132,14 @@ class RetailerArticleViewSet(viewsets.ModelViewSet):
                         # VENTE : on retire du stock + on crée un Sale au prix de vente
                         article.quantity += quantity_change  # négatif donc soustrait
                         article.save()
+                        # Mettre à jour le compteur de ventes du ManufacturerArticle
+                        article.tig.sales += abs(quantity_change)
+                        article.tig.save(update_fields=['sales'])
                         sale = Sale.objects.create(
                             retailer_article=article,
                             quantity=abs(quantity_change),
-                            total=abs(quantity_change) * article.unit_price
+                            total=abs(quantity_change) * article.unit_price,
+                            discount_at_sale=article.discount
                         )
                         created_sales.append({
                             "id": sale.id,
@@ -173,13 +185,31 @@ class RetailerArticleViewSet(viewsets.ModelViewSet):
 
 
 class PurchaseViewSet(viewsets.ModelViewSet):
-    queryset = Purchase.objects.all()
-    serializer_class = PurchaseSerializer
+    queryset = Purchase.objects.select_related(
+        'retailer_article__tig__prod__category'
+    ).all()
+    serializer_class = PurchaseDetailSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        retail_id = self.request.query_params.get('retail')
+        if retail_id:
+            queryset = queryset.filter(retailer_article__retail_id=retail_id)
+        return queryset
 
 
 class SaleViewSet(viewsets.ModelViewSet):
-    queryset = Sale.objects.all()
-    serializer_class = SaleSerializer
+    queryset = Sale.objects.select_related(
+        'retailer_article__tig__prod__category'
+    ).all()
+    serializer_class = SaleDetailSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        retail_id = self.request.query_params.get('retail')
+        if retail_id:
+            queryset = queryset.filter(retailer_article__retail_id=retail_id)
+        return queryset
 
 
 
